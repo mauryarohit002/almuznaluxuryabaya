@@ -1,0 +1,1 @@
+<script src="<?php echo assets('dist/js/master/common.js?v=1')?>"></script>

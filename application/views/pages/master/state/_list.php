@@ -1,0 +1,1 @@
+<?php $this->load->view('pages/component/_list', ['add' => 'onclick=popup('.json_encode([]).')']); ?>

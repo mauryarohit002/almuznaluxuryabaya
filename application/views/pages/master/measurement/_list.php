@@ -1,0 +1,1 @@
+<?php $this->load->view('pages/component/_list', ['add'=> 'onclick=measurement_popup('.json_encode([]).')']); ?>

@@ -1,0 +1,199 @@
+{
+	"info": {
+		"_postman_id": "1ea92ffc-9731-4338-9f1b-d0be511b8e02",
+		"name": "Zoop-karigar",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9645822",
+		"_collection_link": "https://red-equinox-936011.postman.co/workspace/Team-Workspace~63ca97d3-823f-46dc-8a98-e1903eafc201/collection/9645822-1ea92ffc-9731-4338-9f1b-d0be511b8e02?action=share&source=collection_link&creator=9645822"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Generate otp",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "ZkC6BDUzxz",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Api-Access-Key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"mobile_no\": \"1111111111\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/user/generate_otp",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user",
+								"generate_otp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "ZkC6BDUzxz",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Api-Access-Key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"mobile_no\": \"1111111111\",\r\n        \"otp\": \"352040\",\r\n        \"token\": \"\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/user/login",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Auth",
+								"value": "Bearer {{TOKEN}}",
+								"type": "text"
+							}
+						]
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order",
+			"item": [
+				{
+					"name": "Get order",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "ZkC6BDUzxz",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Api-Access-Key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Auth",
+								"value": "Bearer {{TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{           \r\n    \"scan_barcode\":{\r\n        \"barcode\": \"240230000892\",\r\n        \"call\": 1\r\n    },\r\n    \"add_job\" : {\r\n        \"barcode\": \"240230000892\",\r\n        \"process_id\" : -1,\r\n        \"call\" : 1\r\n    },\r\n    \"delete_job\" : {\r\n        \"job_id\": \"4\",\r\n        \"call\" : 0\r\n    },\r\n    \"get_list\" : {\r\n        \"barcode\": \"240230000892\",\r\n        \"limit\":5,\r\n        \"offset\":\"0\",\r\n        \"call\": 1\r\n    }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/order/handler",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"order",
+								"handler"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "https://zoop.co.in/api/karigar",
+			"type": "string"
+		},
+		{
+			"key": "TOKEN",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiNCIsInVzZXJfbmFtZSI6InNoaXJ0IGthcmlnYXIiLCJ1c2VyX2NvZGUiOiJzayIsInVzZXJfZW1haWwiOiIiLCJ1c2VyX21vYmlsZSI6IjExMTExMTExMTEiLCJ2ZXJzaW9uIjoiMS4wIiwiZl95ZWFyIjoiMjAyMy0yMDI0Iiwic3RhcnRfZGF0ZSI6IjIwMjMtMDQtMDEiLCJlbmRfZGF0ZSI6IjIwMjQtMDMtMzEiLCJ0aW1lIjoxNzA3OTA4MjkyfQ.9JFEmXyuSwz_lQz7O1cH97ieEqgmnUhAvk0OQU3sfZ4",
+			"type": "string"
+		}
+	]
+}

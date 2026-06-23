@@ -1,0 +1,1 @@
+<?php $this->load->view('pages/component/list/_navbar'); ?>

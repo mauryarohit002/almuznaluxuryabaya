@@ -1,0 +1,25 @@
+@import url("variables.css");
+* {
+  margin: 0;
+  padding: 0;
+}
+body {
+  overflow: hidden;
+  background-color: var(--bg-color-secondary);
+}
+img {
+  object-fit: contain;
+}
+/* Landscape phones and portrait tablets */
+@media (max-width: 767px) {
+  .bg_image {
+    background-image: none;
+  }
+}
+
+/* Portrait phones and smaller */
+@media (max-width: 480px) {
+  .bg_image {
+    background-image: none;
+  }
+}

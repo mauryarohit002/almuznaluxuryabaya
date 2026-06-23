@@ -1,0 +1,41 @@
+:root{
+	--bg-color-primary:#f9f0f0;
+  --bg-color-secondary:#020202;
+  --bg-color-default:#808080;
+	
+  --bg-color-flat-light: #FFF5;
+  --bg-color-flat-dark:#0002;
+
+  --bg-color-pressed-light:#FFF1;
+  --bg-color-pressed-dark:#0006;
+	
+  --font-color-primary:#020202;
+  --font-color-secondary:#f9f0f0;
+	--font-color-default:#808080;
+  --font-color-danger:#dc3545;
+  --font-color-success:#28a745;
+  --font-color-light:#f4f0f4;
+  --font-color-dark:#000;
+  --font-color-grey:#F5F5F5;
+
+
+  --neu-flat-primary:	-7px -7px 20px 0px var(--bg-color-flat-light), 
+						-4px -4px 5px 0px var(--bg-color-flat-light), 
+						7px 7px 20px 0px var(--bg-color-flat-dark), 
+						4px 4px 5px 0px var(--bg-color-flat-dark);
+
+	--neu-flat-secondary:	-7px -7px 20px 0px var(--bg-color-pressed-light), 
+						  -4px -4px 5px 0px var(--bg-color-pressed-light), 
+						  7px 7px 20px 0px var(--bg-color-pressed-dark), 
+						  4px 4px 5px 0px var(--bg-color-pressed-dark);
+
+  --neu-pressed-primary:inset -7px -7px 20px 0px var(--bg-color-flat-light),
+								inset -4px -4px 5px 0px var(--bg-color-flat-light),
+								inset 7px 7px 20px 0px var(--bg-color-flat-dark),
+								inset 4px 4px 5px 0px var(--bg-color-flat-dark);
+  
+  --neu-pressed-secondary:inset 	-7px -7px 20px 0px var(--bg-color-pressed-light),
+									inset -4px -4px 5px 0px var(--bg-color-pressed-light),
+									inset 7px 7px 20px 0px var(--bg-color-pressed-dark),
+									inset 4px 4px 5px 0px var(--bg-color-pressed-dark);			              
+};

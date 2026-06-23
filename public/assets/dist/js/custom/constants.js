@@ -1,0 +1,23 @@
+const loc = window.location;
+const base_url =
+  loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1]+ "/" + loc.pathname.split("/")[2];
+const SUPPLIER = "SUPPLIER";
+const CUSTOMER = "CUSTOMER";
+const GENERAL = "GENERAL";
+const TO_PAY = "TO PAY";
+const TO_RECEIVE = "TO RECEIVE";
+const RELOAD_TIME = 800;
+const ADMIN = "ADMIN";
+const SALES = "SALES";
+const DISPATCH = "DISPATCH";
+const NOIMAGE = `${base_url}/public/assets/dist/images/no-image.jpg`;
+const LAZYLOADING = `${base_url}/public/assets/dist/images/loading.webp`;
+const WITHIN = "WITHIN";
+const OUTSIDE = "OUTSIDE";
+const REFRESH = "REFRESH";
+const WALKIN = 1;
+const PER_PAGE = 20;
+const CASH = 1;
+const BANK = 2;
+const DEBIT_NOTE = 3;
+const CREDIT_NOTE = 4;

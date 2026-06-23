@@ -1,0 +1,80 @@
+.note-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px 0px;
+}
+.note-display:nth-child(1) .circle__progress { stroke: #AAFF00; }
+.note-display:nth-child(2) .circle__progress { stroke: #FF00AA; }
+.note-display:nth-child(3) .circle__progress { stroke: #AA00FF; }
+.note-display:nth-child(4) .circle__progress { stroke: #00AAFF; }
+.note-display:nth-child(5) .circle__progress { stroke: #000AFF; }
+.note-display:nth-child(6) .circle__progress { stroke: #AAABFF; }
+.note-display:nth-child(7) .circle__progress { stroke: #000000; }
+
+.circle {
+  height: 130px;
+  width: 130px;
+  position: relative;
+  display: inline-block;
+  box-shadow: var(--neu-flat-primary);
+  border-radius: 50%;
+  overflow: hidden;
+  /*background-color: blue;*/
+}
+.circle::after{
+  content: '';
+  height: 80%;
+  width: 80%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  border-radius: 50%;
+  box-shadow: var(--neu-pressed-primary);
+}
+.circle__svg {
+  fill: none;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform: rotate(-90deg);
+}
+.circle__progress {
+  position: absolute;
+  stroke-width:8px;
+  stroke-opacity: 0.3;
+  stroke-linecap: round;
+  transform: scale(0.93);
+  transform-origin: center;
+}
+.circle__progress--fill {
+  --initialStroke: 0;
+  --transitionDuration: 0;
+  stroke-opacity: 1;
+  stroke-dasharray: var(--initialStroke);
+  stroke-dashoffset: var(--initialStroke);
+  transition: stroke-dashoffset var(--transitionDuration) ease;
+}
+
+.percent {
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  position: absolute;
+  font-weight: bold;
+  text-align: center;
+  line-height: 28px;
+  transform: translate(-50%, -50%);
+}
+
+.percent__int { font-size: 15px; }
+.percent__dec { font-size: 12px; }
+
+.label {
+  text-transform: uppercase;
+  margin-top: 5px;
+  text-align: center;
+}
+
+

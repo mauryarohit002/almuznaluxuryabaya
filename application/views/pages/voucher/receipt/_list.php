@@ -1,0 +1,1 @@
+<?php $this->load->view('pages/component/_list', ['add' => 'href='.base_url($menu.'/'.$sub_menu.'?action=add')]); ?>

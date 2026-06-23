@@ -1,0 +1,1 @@
+<?php $this->load->view('pages/component/_list', ['add' => '', 'table_reload' => 'table_wrapper']); ?>
