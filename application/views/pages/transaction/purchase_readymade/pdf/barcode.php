@@ -78,36 +78,45 @@ foreach($barcode_data as $row)
     $pdf->SetFillColor(255,255,255);
     $pdf->Rect(1, 5, 38, 14, 'F'); // clean white background
 
-    $style = array(
-        'position'     => '',
-        'align'        => 'C',
-        'stretch'      => false,
-        'fitwidth'     => false,
-        'border'       => false,
-        'padding'      => 2,
-        'fgcolor'      => array(0,0,0),
-        'bgcolor'      => false,
-        'text'         => false,
-        'font'         => 'helvetica',
-        'fontsize'     => 6
-    );
+    // $style = array(
+    //     'position'     => '',
+    //     'align'        => 'C',
+    //     'stretch'      => false,
+    //     'fitwidth'     => false,
+    //     'border'       => false,
+    //     'padding'      => 2,
+    //     'fgcolor'      => array(0,0,0),
+    //     'bgcolor'      => false,
+    //     'text'         => false,
+    //     'font'         => 'helvetica',
+    //     'fontsize'     => 6
+    // );
 
     /* USE CODE 128 */
-    $pdf->write1DBarcode(
-        $qrcode,
-        'C128',
-        2,
-        6,
-        36,
-        13,
-        0.55,   // IMPORTANT: thicker bars = scanner friendly
-        $style,
-        'N'
-    );
+    // $pdf->write1DBarcode(
+    //     $qrcode,
+    //     'C128',
+    //     2,
+    //     6,
+    //     36,
+    //     13,
+    //     0.55,   // IMPORTANT: thicker bars = scanner friendly
+    //     $style,
+    //     'N'
+    // );
+    $style['border'] 		= 0;
+	$style['vpadding'] 		= 2;
+	$style['hpadding'] 		= 2;
+	$style['fgcolor'] 		= array(0,0,0);
+	$style['bgcolor'] 		= false;
+	$style['module_width'] 	= 1;
+	$style['module_height'] = 1;
+
+	$pdf->write2DBarcode($qrcode, 'QRCODE,H', 8, 3, 50, 18, $style, 'N');
 
     /* HUMAN READABLE TEXT */
     $pdf->SetFont('helvetica','B',10);
-    $pdf->SetXY(2, 18);
+    $pdf->SetXY(2, 20);
     $pdf->Cell(36, 3, $qrcode, 0, 0, 'C');
 
 

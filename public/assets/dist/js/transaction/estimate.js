@@ -385,6 +385,20 @@ const add_transaction = () => {
         }
       }
     }
+    if($("#trans_type").val() == "CUSTOM"){
+      if ($("#sku_id").val() == null ||
+            $("#sku_id").val() == 0 ||
+            $("#sku_id").val() == "") {
+        notifier("sku_id", "Required");
+        check = false;
+      }
+      if ($("#apparel_id").val() == null ||
+            $("#apparel_id").val() == 0 ||
+            $("#apparel_id").val() == "") {
+        notifier("apparel_id", "Required");
+        check = false;
+      }
+    }
   }
 
   if ($("#rate").val() == "" || $("#rate").val() == 0) {

@@ -316,7 +316,10 @@ class Physical extends CI_Controller{
                 echo json_encode(['session' => TRUE, 'status' => FALSE, 'data' => [], 'msg' => 'Barcode is used in other branch.']);
                 return; 
             }
-
+            if($data[0]['brmm_psm_id']==0 && $data[0]['brmm_psst_id'] == 0 && $data[0]['brmm_pust_id'] == 0){
+                echo json_encode(['session' => TRUE, 'status' => FALSE, 'data' => [], 'msg' => '1. Barcode not available.']);
+                return;
+            }
             if($data[0]['brmm_psm_id'] != $psm_id){
                 if(!empty($data[0]['brmm_psm_id'])){
                     echo json_encode(['session' => TRUE, 'status' => FALSE, 'data' => [], 'msg' => 'This barcode from previous entry.']);

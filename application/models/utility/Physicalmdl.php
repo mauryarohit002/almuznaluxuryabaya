@@ -100,7 +100,7 @@
                         FROM barcode_readymade_master brm 
                         WHERE brm.brmm_delete_status = 0
                         AND ((brm.brmm_prmt_qty + brm.brmm_ort_qty + brm.brmm_gt_qty) - (brm.brmm_prrt_qty + brm.brmm_ot_qty + brm.brmm_outward_qty)) > 0
-                        AND brm.brm_branch_id = ".$_SESSION['user_branch_id'];
+                        AND brm.brmm_branch_id = ".$_SESSION['user_branch_id'];
                 $record['unscan_data']  = $this->db->query($query)->result_array();
                 // echo "<pre>"; print_r($record);exit;
                 return $record;
@@ -133,7 +133,8 @@
 						INNER JOIN apparel_master apparel ON(apparel.apparel_id = sku.sku_apparel_id)
 						WHERE psst.psst_psm_id = $psm_id
                         ORDER BY psst.psst_id ASC
-                        LIMIT 20";
+                        -- LIMIT 20
+                        ";
                 $record = $this->db->query($query)->result_array();
                 if(!empty($record)){
                     foreach ($record as $key => $value) {

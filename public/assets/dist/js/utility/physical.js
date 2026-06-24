@@ -220,9 +220,9 @@ const get_barcode_data = (bm_id) => {
 						$("#psm_scan_qty").val(data[0]["scan_qty"]);
 						$("#psm_unscan_qty").val(data[0]["unscan_qty"]);
 
-						if ($("#scan_barcode_wrapper tr").length > 20) {
+						// if ($("#scan_barcode_wrapper tr").length > 20) {
 							$("#scan_barcode_wrapper").find("tr:last-child").remove();
-						}
+						// }
 					}
 				}
 				setTimeout(() => {
