@@ -260,6 +260,11 @@ class estimate extends my_controller{
             if(!isset($post_data['trans_data']) || (isset($post_data['trans_data']) && empty($post_data['trans_data']))) return ['msg' => '1. Item not aded in list.'];
             $post_data['trans_data'] = json_decode($post_data['trans_data'], true);
             // echo "<pre>"; print_r($post_data); exit;
+            if((float)(array_sum($post_data['opmt_amt']))>0 || (float)$post_data['om_advance_amt']>0){
+                if((float)(array_sum($post_data['opmt_amt']))!=(float)$post_data['om_advance_amt']){
+                    return ['msg' => '1. Advance amt and popup adjustment amt mismatch.'];
+                }
+            }
             // master_data
                 $master_data['om_uuid']                     = trim($post_data['om_uuid']);
                 $master_data['om_em_entry_no']              = trim($post_data['om_em_entry_no']);
