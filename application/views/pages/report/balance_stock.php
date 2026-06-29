@@ -268,7 +268,7 @@
 						if(!empty($data['data'])): 
 							foreach ($data['data'] as $key => $value):
 					?>
-								<tr class="<?php echo ($value['bal_qty'] == 0 AND $value['branch_name'] != '') ? 'bg-success text-white' : ''; ?>">
+								<tr class="<?php echo ($value['bal_qty'] == 0 AND $value['branch_name'] != '') ? '' : ''; ?>">
 									<td width="8%"><?php echo $value['supplier_name']; ?></td>
 									<td width="8%"><?php echo $value['branch_name']; ?></td>
 									<td width="8%"><?php echo $value['sku_name']; ?></td>

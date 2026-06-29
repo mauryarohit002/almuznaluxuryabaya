@@ -8,6 +8,7 @@
                     <td width="3%"><?php echo $key+1; ?></td>
                     <td width="7%"><?php echo $value['receipt_entry_no']; ?></td>
                     <td width="10%"><?php echo $value['entry_date']; ?></td>
+                    <td width="10%"><?php echo $value['om_em_entry_no']; ?></td>
                     <td width="15%"><?php echo $value['customer_name']; ?></td>
                     <td width="10%"><?php echo $value['receipt_amt']; ?></td>
                     <td width="15%"><?php echo $value['receipt_notes']; ?></td>

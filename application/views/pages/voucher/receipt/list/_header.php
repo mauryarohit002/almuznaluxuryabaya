@@ -3,6 +3,7 @@
         <th width="3%">#</th>
         <th width="7%">entry no</th>
         <th width="10%">entry date</th>
+        <th width="15%">order no</th>
         <th width="15%">customer</th>
         <th width="10%">receipt amt</th>
         <th width="15%">notes</th>

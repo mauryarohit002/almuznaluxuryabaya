@@ -212,6 +212,7 @@
                                         <td width="5%" align="center">TYPE</td>
                                         <td width="5%">entry date</td>
                                         <td width="5%">balance amt</td>
+                                        <td width="5%">allocated amt</td>
                                         <td width="5%">adjust amt</td>
                                         <td width="5%">pending amt</td>
                                     </tr>

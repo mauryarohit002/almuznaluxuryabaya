@@ -302,6 +302,7 @@ const add_order_wrapper = (data) => {
     rot_type,
     rot_entry_date,
     rot_total_amt,
+    rot_allocated_amt,
     rot_adjust_amt,
     balance_amt,
   } = data;
@@ -334,7 +335,7 @@ const add_order_wrapper = (data) => {
 						value="${rot_om_id}"/>
 					<input 
 						type="text" 
-						class="border-0 text-center" 
+						class="form-control bg-light text-dark border-0 text-center" 
 						name="rot_entry_no[${rot_om_id}]" 
 						id="rot_entry_no_${rot_om_id}" 
 						value="${rot_entry_no}" 
@@ -344,7 +345,7 @@ const add_order_wrapper = (data) => {
         <td width="5%">
           <input 
             type="text" 
-            class="border-0 text-center" 
+            class="form-control bg-light text-dark border-0 text-center" 
             name="rot_type[${rot_om_id}]" 
             id="rot_type_${rot_om_id}" 
             value="${rot_type}" 
@@ -354,7 +355,7 @@ const add_order_wrapper = (data) => {
 				<td width="5%">
 					<input 
 						type="text" 
-						class="border-0" 
+						class="form-control bg-light text-dark border-0" 
 						name="rot_entry_date[${rot_om_id}]" 
 						id="rot_entry_date_${rot_om_id}" 
 						value="${rot_entry_date}" 
@@ -364,17 +365,27 @@ const add_order_wrapper = (data) => {
 				<td width="5%">
 					<input 
 						type="number" 
-						class="border-0" 
+						class="form-control bg-light text-dark border-0" 
 						name="rot_total_amt[${rot_om_id}]" 
 						id="rot_total_amt_${rot_om_id}" 
 						value="${rot_total_amt}" 
 						readonly 
 					/>
 				</td>
+        <td width="5%">
+					<input 
+						type="number" 
+						class="form-control bg-light text-dark border-0" 
+						name="rot_allocated_amt[${rot_om_id}]" 
+						id="rot_allocated_amt_${rot_om_id}" 
+						value="${rot_allocated_amt}" 
+						readonly 
+					/>
+				</td>
 				<td width="5%">
 					<input 
 						type="number" 
-						class="border-0" 
+						class="form-control bg-light text-dark border-0" 
 						name="rot_adjust_amt[${rot_om_id}]" 
 						id="rot_adjust_amt_${rot_om_id}" 
 						value="${rot_adjust_amt}" 
@@ -384,7 +395,7 @@ const add_order_wrapper = (data) => {
 				<td width="5%">
 					<input 
 						type="number" 
-						class="border-0" 
+						class="form-control bg-light text-dark border-0" 
 						id="rot_balance_amt_show_${rot_om_id}" 
 						value="${balance_amt}" 
 						readonly 

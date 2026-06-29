@@ -212,7 +212,8 @@ class receipt extends my_controller{
                         $trans_data['rot_type']         = $post_data['rot_type'][$key];
 						$trans_data['rot_entry_date']		= $post_data['rot_entry_date'][$key];
 						$trans_data['rot_total_amt']		= $post_data['rot_total_amt'][$key];
-						$trans_data['rot_adjust_amt']		= $post_data['rot_adjust_amt'][$key];
+						$trans_data['rot_allocated_amt']	= $post_data['rot_allocated_amt'][$key];
+                        $trans_data['rot_adjust_amt']		= $post_data['rot_adjust_amt'][$key];
 						$trans_data['rot_delete_status']	= false;
 						$trans_data['rot_updated_by'] 		= $_SESSION['user_id'];
 						$trans_data['rot_updated_at'] 		= date('Y-m-d H:i:s');

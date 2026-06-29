@@ -96,23 +96,23 @@ class daily_transaction_model extends my_model{
                     receipt.receipt_entry_no as entry_no, 
                     DATE_FORMAT(receipt.receipt_entry_date, '%d-%m-%Y') as entry_date, 
                     UPPER(customer.customer_name) as customer_name,
-                    rot.rot_adjust_amt,
-                    GROUP_CONCAT(DISTINCT pm.payment_mode_name SEPARATOR ', ') AS payment_mode_name
+                    coalesce(rpmt.rpmt_amt,0) as rot_adjust_amt,
+                    GROUP_CONCAT(DISTINCT pm.payment_mode_name SEPARATOR ', ') AS payment_mode_name,
+                    coalesce(GROUP_CONCAT(DISTINCT om.om_em_entry_no),'') as om_em_entry_no
                     FROM receipt_master receipt
-                    INNER JOIN receipt_order_trans rot ON(rot.rot_receipt_id = receipt.receipt_id)
-                    INNER JOIN order_master om ON(om.om_id = rot.rot_om_id)
-                    INNER JOIN customer_master customer ON(customer.customer_id = om.om_customer_id) 
+                    INNER JOIN customer_master customer ON(customer.customer_id = receipt.receipt_customer_id) 
+                    INNER JOIN branch_master branch ON(branch.branch_id = receipt.receipt_branch_id) 
+                    left JOIN receipt_order_trans rot ON(rot.rot_receipt_id = receipt.receipt_id AND rot.rot_delete_status = 0)
+                    left JOIN order_master om ON(om.om_id = rot.rot_om_id)
                     LEFT JOIN receipt_payment_mode_trans rpmt
                         ON(rpmt.rpmt_receipt_id = receipt.receipt_id
                         AND rpmt.rpmt_delete_status = 0)
-
                     LEFT JOIN payment_mode_master pm
                         ON(pm.payment_mode_id = rpmt.rpmt_payment_mode_id)
-                    INNER JOIN branch_master branch ON(branch.branch_id = receipt.receipt_branch_id) 
-                    WHERE rot.rot_delete_status =0
+                    WHERE receipt.receipt_delete_status = 0 
                     ".($_SESSION['user_id'] != 1 ? " AND receipt.receipt_branch_id = '".$_SESSION['user_branch_id']."'" : "")."
                     $subsql3
-                    GROUP BY receipt.receipt_id, rot.rot_id
+                    GROUP BY receipt.receipt_id, rpmt.rpmt_payment_mode_id
                     ORDER BY receipt.receipt_entry_date DESC";
             // echo "<pre>"; print_r($query);exit;
             $record['receipt_order_data'] = $this->db->query($query)->result_array();
@@ -191,7 +191,7 @@ class daily_transaction_model extends my_model{
                                 GROUP BY rpmt.rpmt_payment_mode_id
                            
                         ")->result_array();
-
+                    
                     $record['receipt_payment'][$key]['payment_mode_name'] = $value['mode_name'];
                     $record['receipt_payment'][$key]['payment_mode_amt']  = (!empty($order_data)) ? (float)$order_data[0]['amount'] : 0;
                     //receipt query end 

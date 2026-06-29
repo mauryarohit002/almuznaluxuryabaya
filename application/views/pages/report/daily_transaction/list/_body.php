@@ -158,6 +158,7 @@
                         <th width="15%" style="background-color: #858C8C">receipt&nbsp;no</th>
                         <th width="15%" style="background-color: #858C8C">module</th>
                         <th width="15%" style="background-color: #858C8C">receipt&nbsp;date</th>
+                        <th width="15%" style="background-color: #858C8C">order&nbsp;no.</th>
                         <th width="15%" style="background-color: #858C8C">Customer&nbsp;name</th>
                         <th width="15%" style="background-color: #858C8C">Amount</th>
                         <th width="15%" style="background-color: #3faaaa">Payment Mode</th>
@@ -169,12 +170,14 @@
                             // echo "<pre>";print_r($data);die;
                             if(!empty($data['receipt_order_data'])):  
                             foreach ($data['receipt_order_data'] as $key => $value):
+                                $receipt_total += $value['rot_adjust_amt'];
                             ?>
                                     <tr> 
                                         <td><?php echo $key+1; ?></td>
                                         <td><?php echo $value['entry_no']; ?></td>
                                         <td><?php echo $value['module_name']; ?></td>
                                         <td><?php echo $value['entry_date']; ?></td>
+                                        <td><?php echo $value['om_em_entry_no']; ?></td>
                                         <td><?php echo $value['customer_name']; ?></td>
                                         <td><?php echo $value['rot_adjust_amt']; ?></td>
                                         <td><?php echo $value['payment_mode_name']; ?></td>
@@ -189,7 +192,7 @@
                         <?php endif; ?>
                     </tbody>
                     <tr style="font-weight:bold; background:#eee;">
-                        <td colspan="5" align="right">TOTAL</td>
+                        <td colspan="6" align="right">TOTAL</td>
                         <td><?php echo $receipt_total; ?></td>
                         <td></td>
                     </tr>

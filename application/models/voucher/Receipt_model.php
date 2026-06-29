@@ -62,13 +62,17 @@ class receipt_model extends my_model{
         }
         $query="SELECT receipt.*,
                 DATE_FORMAT(receipt.receipt_entry_date, '%d-%m-%Y') as entry_date,
-                UPPER(customer.customer_name) as customer_name
+                UPPER(customer.customer_name) as customer_name,
+                GROUP_CONCAT(om.om_em_entry_no ORDER BY om.om_id SEPARATOR ', ') AS om_em_entry_no
                 FROM receipt_master receipt
                 LEFT JOIN customer_master customer ON(customer.customer_id = receipt.receipt_customer_id)
+                LEFT JOIN receipt_order_trans rot ON (rot.rot_receipt_id = receipt.receipt_id AND rot.rot_delete_status = 0)
+LEFT JOIN order_master om ON om.om_id = rot.rot_om_id
                 WHERE receipt.receipt_delete_status = 0
                 AND receipt.receipt_branch_id = ".$_SESSION['user_branch_id']."
                 AND receipt.receipt_fin_year = '".$_SESSION['fin_year']."'
                 $subsql
+                GROUP BY receipt.receipt_id
                 ORDER BY receipt.receipt_id DESC
                 $limit
                 $ofset";
@@ -228,6 +232,7 @@ class receipt_model extends my_model{
                 IF(om.om_status=0,'ESTIMATE','ORDER') as rot_type,
                 IF(om.om_status=0,DATE_FORMAT(om.om_em_entry_date, '%d-%m-%Y'),DATE_FORMAT(om.om_em_entry_date, '%d-%m-%Y')) as rot_entry_date,
                 (om.om_total_amt - om.om_advance_amt) as rot_total_amt,
+                om.om_allocated_amt as rot_allocated_amt,
                 0 as rot_adjust_amt,
                 (om.om_total_amt - (om.om_advance_amt + om.om_allocated_amt)) as balance_amt
                 FROM order_master om
