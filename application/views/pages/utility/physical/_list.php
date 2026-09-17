@@ -11,7 +11,6 @@
 	$_scan_qty_to		= (isset($_GET['_scan_qty_to'])) ? $_GET['_scan_qty_to'] : "";
 	$_unscan_qty_from	= (isset($_GET['_unscan_qty_from'])) ? $_GET['_unscan_qty_from'] : "";
 	$_unscan_qty_to 	= (isset($_GET['_unscan_qty_to'])) ? $_GET['_unscan_qty_to'] : "";
-	// pre(count($data['data']));
 ?>
 <script>
     let link 	= '<?php echo $menu ?>';
@@ -39,7 +38,7 @@
 							onclick="initiate_process()" 
 						><i class="text-success fa fa-plus"></i></a>
 					</li>
-				<?php elseif(count($data['data']) == 0): ?>
+				<?php elseif(count($data['data']) < 3): ?>
 					<li class="breadcrumb-item" aria-current="add-page">
 						<a 
 							type="button" 

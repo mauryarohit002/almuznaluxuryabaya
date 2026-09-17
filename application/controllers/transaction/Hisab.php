@@ -63,10 +63,15 @@ class hisab extends my_controller{
 
 		return ['status' => TRUE, 'msg' => 'Hisab deleted successfully'];
 	}
-    public function get_job_data(){
+    public function get_job_data(){  
         $post_data  = $this->input->post();
         $id         = $post_data['id'];
-        $data       = $this->model->get_job_data($id);
+        $from_date      = $post_data['from_date'];
+        $to_date        = $post_data['to_date'];
+
+        $data       = $this->model->get_job_data($id,$from_date,$to_date);
+        if(empty($data)) return['msg' => 'Data Not found'];
+        // if(empty($data[0]['ht_rate'])) return['msg' => 'Rate is empty for hisab'];
         return['status' => TRUE, 'data' => $data, 'msg' => 'Record fetched successfully.'];
 	}
     
@@ -82,6 +87,9 @@ class hisab extends my_controller{
                 $master_data['hm_uuid'] 				    = trim($post_data['hm_uuid']);
                 $master_data['hm_entry_no'] 				= trim($post_data['hm_entry_no']);
                 $master_data['hm_entry_date'] 				= date('Y-m-d', strtotime($post_data['hm_entry_date']));
+                $master_data['hm_from_date']                = $post_data['hm_from_date'];
+                $master_data['hm_to_date']                  = $post_data['hm_to_date'];
+
                 $master_data['hm_karigar_id'] 				= trim($post_data['hm_karigar_id']);
                 $master_data['hm_notes'] 			        = trim($post_data['hm_notes']);
                 $master_data['hm_total_qty'] 				= trim($post_data['hm_total_qty']);
@@ -169,14 +177,13 @@ class hisab extends my_controller{
                 $trans_data['ht_obt_id']         = $value['ht_obt_id'];
                 $trans_data['ht_jit_id']         = $value['ht_jit_id'];
                 $trans_data['ht_jrt_id']         = $value['ht_jrt_id']; 
-
                 $trans_data['ht_apparel_id'] 		= $value['ht_apparel_id'];
                 $trans_data['ht_rate']				= $value['ht_rate'];
                 $trans_data['ht_delete_status']		= false;
                 $trans_data['ht_updated_by'] 		= $_SESSION['user_id'];
                 $trans_data['ht_updated_at'] 		= date('Y-m-d H:i:s');
                 
-                if(empty($value['ht_id'])){
+                if(empty($value['ht_id'])){ 
                     $trans_data['ht_created_by'] 	= $_SESSION['user_id'];
                     $trans_data['ht_created_at'] 	= date('Y-m-d H:i:s');
                     $ht_id = $this->db_operations->data_insert($this->sub_menu.'_trans', $trans_data);

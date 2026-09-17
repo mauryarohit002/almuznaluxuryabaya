@@ -9,22 +9,18 @@ class job_receive extends my_controller{
         $this->sub_menu = 'job_receive'; 
         parent::__construct($this->menu, $this->sub_menu); 
     }
-    public function remove(){
+
+   	public function remove(){
 		$post_data  = $this->input->post();
 		$id         = $post_data['id'];
 		$result     = isMenuAssigned($this->menu, $this->sub_menu, 'delete');
 		if(!$result['session'] || !$result['status'] || !$result['active']) return $result;
 
-		$data = $this->db_operations->get_record($this->sub_menu.'_master', ['jrm_id' => $id, 'jrm_delete_status' => false]);
-		if(empty($data)) return ['status' => REFRESH, 'msg' => '3. Job receive not found.'];	
-
-		if($this->model->isExist($id)) return ['msg' => '1. Not allowed to delete.'];	
-
-		$trans_data = $this->db_operations->get_record($this->sub_menu.'_trans', ['jrt_jrm_id' => $id, 'jrt_delete_status' => false]);
+		$trans_data = $this->db_operations->get_record($this->sub_menu.'_trans', ['jrt_id' => $id, 'jrt_delete_status' => false]);
 		if(empty($trans_data)) return ['msg' => '2. Transaction not found.'];
-		
+		$jrm_id = $trans_data[0]['jrt_jrm_id'];
+
 		$this->db->trans_begin();
-		
 		foreach ($trans_data as $key => $value) {
 			if($this->model->isTransExist($value['jrt_id'])){
 				$this->db->trans_rollback();
@@ -41,16 +37,29 @@ class job_receive extends my_controller{
 				$this->db->trans_rollback();
 				return ['msg' => '2. Transaction not deleted.'];
 			}
+            
+            $this->model->delete_previous_hisab($value['jrt_jim_id'],$value['jrt_obt_id'],$value['jrt_id']);
+            if($value['jrt_rfd']){
+                if($this->db_operations->data_update('order_barcode_trans',['obt_rfd_done'=>0] , 'obt_id', $value['jrt_obt_id']) < 1){
+                    $this->db->trans_rollback();
+                    return ['msg' => 'Barcode Not Update for RFD'];
+                }
+            }
 		}
 
-		$update_data 						= [];
-		$update_data['jrm_entry_no'] 		= $data[0]['jrm_entry_no'].''.$id; 
-		$update_data['jrm_delete_status'] 	= true; 
-		$update_data['jrm_updated_by'] 		= $_SESSION['user_id']; 
-		$update_data['jrm_updated_at'] 		= date('Y-m-d H:i:s'); 
-		if($this->db_operations->data_update($this->sub_menu.'_master', $update_data, 'jrm_id', $id) < 1){
-			$this->db->trans_rollback();
-			return ['msg' => 'Job receive not deleted.'];
+		$cnt_data = $this->db_operations->get_cnt($this->sub_menu.'_trans',['jrt_delete_status'=>0,'jrt_id'=>$id]);
+        if($cnt_data==0){ 
+            $data=$this->db_operations->get_record('job_receive_master',['jrm_id'=>$jrm_id]);
+        	if($this->model->isExist($id)) return ['msg' => '1. Not allowed to delete.'];	
+			$update_data 						= [];
+			$update_data['jrm_entry_no'] 		= $data[0]['jrm_entry_no'].''.$id; 
+			$update_data['jrm_delete_status'] 	= true; 
+			$update_data['jrm_updated_by'] 		= $_SESSION['user_id']; 
+			$update_data['jrm_updated_at'] 		= date('Y-m-d H:i:s'); 
+			if($this->db_operations->data_update($this->sub_menu.'_master', $update_data, 'jrm_id', $jrm_id) < 1){
+				$this->db->trans_rollback();
+				return ['msg' => 'Job receive not deleted.'];
+			}
 		}
 
 		if ($this->db->trans_status() === FALSE){
@@ -65,15 +74,9 @@ class job_receive extends my_controller{
         $post_data  = $this->input->post();
         $id         = $post_data['id'];
         $data       = $this->model->get_barcode_data($id);
-
         if(empty($data)) return ['msg' => '1. Barcode not found.'];
-        
         if($data[0]['obt_delete_status'] == 1) return ['msg' => '1. Barcode is deleted.'];
-
         if($data[0]['jrt_jit_id'] != 0) return ['msg' => '1. Barcode already received from '.$data[0]['proces_name']];
-        
-        #TODO: check validation for barcode
-
         return ['status' => TRUE, 'data' => $data, 'msg' => 'Barcode scan successfully.'];
     }
 
@@ -83,7 +86,6 @@ class job_receive extends my_controller{
         
         $post_data['trans_data'] = json_decode($post_data['trans_data'], true);
         if(!isset($post_data['trans_data']) || (isset($post_data['trans_data']) && empty($post_data['trans_data']))) return ['msg' => '1. Item not aded in list.'];
-
         // master_data
             $master_data                    = [];
             $master_data['jrm_uuid'] 	    = trim($post_data['jrm_uuid']);
@@ -152,21 +154,45 @@ class job_receive extends my_controller{
                     $update_data['jrt_updated_by'] 		= $_SESSION['user_id']; 
                     $update_data['jrt_updated_at'] 		= date('Y-m-d H:i:s'); 
                     if($this->db_operations->data_update($this->sub_menu.'_trans', $update_data, 'jrt_id', $value['jrt_id']) < 1) return ['msg' => '1. Transaction not deleted.'];
+                    
+                    $this->model->delete_previous_hisab($value['jrt_jim_id'],$value['jrt_obt_id'],$value['jrt_id']);
+                    if($value['jrt_rfd']){
+                        if($this->db_operations->data_update('order_barcode_trans',['obt_rfd_done'=>0] , 'obt_id', $value['jrt_obt_id']) < 1){
+                            return ['msg' => 'Barcode Not Update for RFD'];
+                        }
+                    }
                 }
             }
         }
+      
         foreach ($post_data['trans_data'] as $key => $value){
+            if($this->model->isTransExist($value['jrt_id'])) return ['msg' => '1. Not allowed to Update'];
+
             $trans_data 					= [];
             $trans_data['jrt_jrm_id'] 		= $id;
             $trans_data['jrt_jrm_uuid'] 	= $post_data['jrm_uuid'];
             $trans_data['jrt_obt_id'] 	    = trim($value['obt_id']);
             $trans_data['jrt_jim_id'] 	    = trim($value['jim_id']);
             $trans_data['jrt_jit_id'] 	    = trim($value['jit_id']);
-            $trans_data['jrt_delete_status']= false;
+            $trans_data['jrt_rfd']          = !empty($value['jrt_rfd']) ? 1 : 0;
+            $trans_data['jrt_delete_status']= false; 
             $trans_data['jrt_updated_by'] 	= $_SESSION['user_id'];
             $trans_data['jrt_updated_at'] 	= date('Y-m-d H:i:s');
             
-            if($value['jrt_id'] == 0){
+            $barcode=[];
+            $barcode['obt_rfd_done'] = $trans_data['jrt_rfd'];
+            if($this->db_operations->data_update('order_barcode_trans', $barcode, 'obt_id', $trans_data['jrt_obt_id']) < 1){
+                return ['msg' => 'Barcode Not Update for RFD'];
+            }
+
+
+            if($value['jrt_id'] == 0){ 
+                $this->model->update_previous_hisab(
+                    $trans_data['jrt_jim_id'],
+                    $trans_data['jrt_obt_id']
+                );
+
+                $trans_data['jrt_not_hisab'] = 0;
                 $trans_data['jrt_created_by'] 	= $_SESSION['user_id'];
                 $trans_data['jrt_created_at'] 	= date('Y-m-d H:i:s');
                 if($this->db_operations->data_insert($this->sub_menu.'_trans', $trans_data) < 1) return ['msg' => 'Transaction not added.'];

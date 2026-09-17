@@ -5,15 +5,15 @@
         }
         // core_functions
             public function isExist($id){
-                // $data = $this->db->query("SELECT psm_id FROM physical_stock_master WHERE psm_id > $id AND psm_branch_id = ".$_SESSION['user_branch_id']."  LIMIT 1")->result_array();
-                // if(!empty($data)) return true;
+                $data = $this->db->query("SELECT psm_id FROM physical_stock_master WHERE psm_id > $id AND psm_branch_id = ".$_SESSION['user_branch_id']."  LIMIT 1")->result_array();
+                if(!empty($data)) return true;
 
-                // $data = $this->db->query("SELECT psm_entry_date FROM physical_stock_master WHERE psm_id = $id AND psm_branch_id = ".$_SESSION['user_branch_id']."  LIMIT 1")->result_array();
+                $data = $this->db->query("SELECT psm_entry_date FROM physical_stock_master WHERE psm_id = $id AND psm_branch_id = ".$_SESSION['user_branch_id']."  LIMIT 1")->result_array();
 
-                // if(!empty($data)){
-                //     $data = $this->db->query("SELECT sm_id FROM sales_master WHERE sm_delete_status = 0 AND sm_entry_date >= '".$data[0]['psm_entry_date']."' AND sm_branch_id = ".$_SESSION['user_branch_id']."  LIMIT 1")->result_array();
-                //     if(!empty($data)) return true;
-                // }
+                if(!empty($data)){
+                    $data = $this->db->query("SELECT om_id FROM order_master WHERE om_delete_status = 0 AND om_entry_date >= '".$data[0]['psm_entry_date']."' AND om_branch_id = ".$_SESSION['user_branch_id']."  LIMIT 1")->result_array();
+                    if(!empty($data)) return true;
+                }
 
 
 

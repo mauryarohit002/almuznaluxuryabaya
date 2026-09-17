@@ -58,7 +58,7 @@ $(document).ready(function () {
 });
 const record_remove = (data) => {
   const path = `${link}/${sub_link}/handler`;
-  const form_data = { func: "remove", id: data.jrm_id };
+  const form_data = { func: "remove", id: data.jrt_id };
   let html = `<table class="table table-sm table-hover text-uppercase">
                   <tbody>
                     <tr>

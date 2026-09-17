@@ -53,7 +53,7 @@ const get_transaction = () => {
     }
   }
 };
-const get_barcode_data = (obt_id) => {
+const get_barcode_data = (obt_id) => { 
   if (!obt_id) return false;
   const index = trans_data.findIndex((value) => value.obt_id == obt_id);
   if (index >= 0) {
@@ -64,8 +64,9 @@ const get_barcode_data = (obt_id) => {
     });
     return false;
   }
+  let proces_id = $("#jim_proces_id").val();
   const path = `${link}/${sub_link}/handler`;
-  let form_data = `func=get_barcode_data&id=${obt_id}`;
+  let form_data = `func=get_barcode_data&id=${obt_id}&proces_id=${proces_id}`;
   ajaxCall(
     "POST",
     path,
@@ -74,7 +75,7 @@ const get_barcode_data = (obt_id) => {
     (resp) => {
       if (handle_response(resp)) {
         const { data, msg } = resp;
-        if (data && data.length != 0) {
+        if (data && data.length != 0) { 
           data.forEach((value) => add_wrapper_data(value));
           $("#transaction_count").html(trans_data.length);
           toastr.success(`${data[0]["obt_item_code"]}`, msg, {
@@ -96,6 +97,7 @@ const add_wrapper_data = (data) => {
     obt_id,
     obt_item_code,
     apparel_name,
+    sku_name,
     customer_name,
     entry_no,
     entry_date,
@@ -104,6 +106,7 @@ const add_wrapper_data = (data) => {
   let tr = `<tr id="row_${obt_id}">
               <td >${obt_item_code}</td>
               <td >${apparel_name}</td>
+              <td >${sku_name}</td>
               <td >${customer_name}</td>
               <td >${entry_no}</td>
               <td >${entry_date}</td>

@@ -39,6 +39,42 @@ class sku extends my_controller{
 
 		return ['status' => TRUE, 'data' => $data,  'msg' => $msg];
 	}
+
+	public function update_price(){
+		$post_data  = $this->input->post();
+		$id         = $post_data['id'];
+		$result     = isMenuAssigned($this->menu, $this->sub_menu, ($id == 0 ? 'add' : 'edit'));
+		if(!$result['session'] || !$result['status'] || !$result['active']) return $result;
+		// echo "<pre>"; print_r($post_data); exit;
+		$form_data = $post_data;
+		unset($post_data['func']);
+		unset($post_data['id']);
+
+		$post_data[$this->sub_menu.'_updated_by'] 	= $_SESSION['user_id'];
+
+		$this->db->trans_begin();
+
+		$prev_data = $this->db_operations->get_record($this->sub_menu.'_master', [$this->sub_menu.'_id' => $id]);
+		if(empty($prev_data)){
+			$this->db->trans_rollback();
+			return['status' => REFRESH, 'msg' => ucfirst($this->sub_menu).' not found.'];
+		}
+		$msg = ucfirst($this->sub_menu).' updated successfully.';
+		if($this->db_operations->data_update($this->sub_menu.'_master', $post_data, $this->sub_menu.'_id', $id) < 1){
+			$this->db->trans_rollback();
+			return ['msg' => ucfirst($this->sub_menu).' not updated.'];
+		}
+		
+		if ($this->db->trans_status() === FALSE){
+			$this->db->trans_rollback();
+			return ['msg' => '1. Transaction Rollback.'];
+		}
+		$this->db->trans_commit();
+
+		$data['id'] 	= $id;
+		return['session' => TRUE, 'status' => TRUE, 'data' => $data,  'msg' => $msg];
+	}
+
 	public function remove(){
 		$post_data  = $this->input->post();
 		$id         = $post_data['id'];
@@ -123,6 +159,7 @@ class sku extends my_controller{
 				$master_data['sku_mrp'] 		= trim($post_data['sku_mrp']);
 				$master_data['sku_offer_price'] = trim($post_data['sku_offer_price']);
 				$master_data['sku_last_price'] 	= trim($post_data['sku_last_price']);
+				$master_data['sku_jobber_price'] = trim($post_data['sku_jobber_price']);
 				$master_data['sku_cp'] 			= trim($post_data['sku_cp']);
 				$master_data['sku_piece'] 		= trim($post_data['sku_piece']);
 				$master_data['sku_image'] 		= trim($post_data['sku_image']);

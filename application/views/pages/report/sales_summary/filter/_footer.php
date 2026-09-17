@@ -1,8 +1,7 @@
 <button 
-    type="button" 
+    
     id="btn_search" 
     class="btn btn-md btn-secondary btn-block text-uppercase" 
-    onclick="get_record(true)"
 >search</button>
 <button 
     type="button" 

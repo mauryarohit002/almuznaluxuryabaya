@@ -14,11 +14,10 @@
   $bg_color 	= get_bgcolor();
 
 	$menu_groups = [
-
 		'system_setting' => [
 			'label' => 'SYSTEM SETTING',
 			'items' => [
-				'apparel','branch','city','country','customer','measurement','measurement_setting','general','sku','supplier','size','menu','role','user','user_rights'
+				'apparel','branch','city','country','customer','measurement','measurement_setting','general','grp','sku','supplier','size','menu','role','user','user_rights'
 			]
 		],
 
@@ -26,6 +25,12 @@
 			'label' => 'ORDER',
 			'items' => [
 				'estimate'
+			]
+		],
+		'order return' => [
+			'label' => 'ORDER RETURN',
+			'items' => [
+				'order_return'
 			]
 		],
 
@@ -190,6 +195,7 @@
 				</div>
 				<div class="collapse navbar-collapse scroll" id="navbarSupportedContent">
 					<ul class="navbar-nav">
+
 						<?php foreach ($menu_groups as $key => $group): 
 								$valid_items = [];
 
@@ -206,7 +212,6 @@
 							?>
 
     <?php if ($key === 'order'): ?>
-        <!-- DIRECT ORDER LINK -->
         <?php 
             $order_js = $group['items'][0]; // estimate
             if (isset($all_menu_items[$order_js])): 
@@ -222,11 +227,26 @@
                 </a>
             </li>
         <?php endif; ?>
-
-    <?php else: ?>
+    <?php  ?>
+    <?php elseif ($key === 'order return'): ?>
+        <?php 
+            $order_js = $group['items'][0]; 
+            if (isset($all_menu_items[$order_js])): 
+                $order_item = $all_menu_items[$order_js];
+        ?>
+            <li class="nav-item">
+                <a class="nav-link font-weight-bold"
+                   id="<?php echo $order_item['mt_js']; ?>"
+                   href="<?php echo base_url(
+                       $order_item['controller'].'/'.$order_item['mt_url']
+                   ); ?>">
+                    <?php echo $group['label']; ?>
+                </a>
+            </li>
+        <?php endif; ?>
+    <?php else: ?>	
         <!-- NORMAL DROPDOWN (OTHER MENUS) -->
         <li class="nav-item dropdown position-static">
-
             <a class="nav-link dropdown-toggle"
                href="#"
                role="button"
@@ -329,13 +349,13 @@
 				</ul>
 
 				</div>
-				<div class="d-none d-sm-none d-md-none d-lg-block mx-2">
+				<!-- <div class="d-none d-sm-none d-md-none d-lg-block mx-2">
 					<div class="d-flex">
 						<input 
 							type="color"
 							class="m-2 neu_flat_secondary"
 							id="user_bgcolor"
-							value="<?php echo $bg_color; ?>"
+							value="<?php //echo $bg_color; ?>"
 							style="width: 2rem;"
 							onchange="set_user_bg_color()"
 						/>
@@ -343,7 +363,7 @@
 							<select name="search_sub_menu" class="search_sub_menu"></select>
 						</form>
 					</div>
-				</div>
+				</div> -->
 				<div class="d-none d-sm-none d-md-none d-lg-block">
 					<div class="d-flex">
 						<div class="d-flex flex-column ml-3 mr-2">

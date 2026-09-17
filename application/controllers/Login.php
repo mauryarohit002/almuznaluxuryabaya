@@ -105,9 +105,9 @@
 			$session_data['user_fullname'] 		= $user[0]['user_fullname'];
 			$session_data['user_branch_id'] 	= $user[0]['user_branch_id'];
 			$session_data['user_type'] 			= $user[0]['user_type'];
-			$session_data['user_branch'] 		= 'main';
+			$session_data['user_branch'] 		= $branch_data[0]['branch_name'];
 			$session_data['user_branch_name']   = $branch_data[0]['branch_name'];
-			$session_data['branch_default'] 	= 1;
+			$session_data['branch_default'] 	= $branch_data[0]['branch_default'];
 			$session_data['company_name'] 		= $this->get_default_company();
 			$session_data['fin_year'] 			= $post_data['fin_year'];
 			$session_data['start_year'] 		= $this->get_fin_year($post_data['fin_year']);
@@ -147,8 +147,7 @@
 			$this->db_operations->data_update("user_master", $arr, 'user_id', $user_id);
 
 			$this->session->sess_destroy();
-			unset($_SESSION);
-			// echo "<pre>"; print_r($_SESSION); exit();
+			// echo "<pre>"; print_r($_GET); exit();
 			$msg = isset($_GET['msg']) ? '?msg='.$_GET['msg'] : '';
 			// echo "<pre>";print_r(base_url('?msg=text')); exit;
 			redirect(base_url($msg));

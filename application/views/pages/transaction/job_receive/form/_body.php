@@ -52,8 +52,10 @@
                         <table class="table table-sm text-uppercase">
                             <thead class="table-dark">
                                 <tr>
+                                     <td>RFD&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                     <th >barcode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
                                     <th >apparel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                                    <th >sku&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
                                     <th >client&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
                                     <th >order&nbsp;no.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
                                     <th >order&nbsp;date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>

@@ -7,7 +7,7 @@
 <div class="row">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
         <div class="d-flex flex-wrap">
-            <div class="col-12 col-sm-12 col-md-4 col-lg-3">
+            <div class="col-12 col-sm-12 col-md-4 col-lg-4">
                 <div class="card mb-3">
                     <div class="card-header text-uppercase">general detail</div>
                     <div class="card-body">
@@ -50,6 +50,36 @@
                                 />   
                                 <label class="text-uppercase">entry date</label>
                                 <small class="form-text text-muted helper-text" id="hm_entry_date_msg"></small>
+                            </div>
+                             <div class="col-12 col-sm-12 col-md-6 col-lg-6 floating-label">
+                                <input 
+                                    type="date" 
+                                    class="form-control floating-input" 
+                                    id="hm_from_date" 
+                                    name="hm_from_date" 
+                                    value="<?php echo empty($master_data) ? date('Y-m-d',strtotime('-7 days')) : date('Y-m-d', strtotime($master_data[0]['hm_from_date'])) ?>" 
+                                    placeholder=" " 
+                                    autocomplete="off"
+                                    tabindex= "<?php echo $tabindex++; ?>"
+                                    <?php echo (!empty($master_data)) ? 'readonly="readonly"' : ''; ?>
+                                />   
+                                <label class="text-uppercase">R. From date</label>
+                                <small class="form-text text-muted helper-text" id="hm_from_date_msg"></small>
+                            </div>
+                            <div class="col-12 col-sm-12 col-md-6 col-lg-6 floating-label">
+                                <input 
+                                    type="date" 
+                                    class="form-control floating-input" 
+                                    id="hm_to_date" 
+                                    name="hm_to_date" 
+                                    value="<?php echo empty($master_data) ? date('Y-m-d') : date('Y-m-d', strtotime($master_data[0]['hm_to_date'])) ?>" 
+                                    placeholder=" " 
+                                    autocomplete="off"
+                                    tabindex= "<?php echo $tabindex++; ?>"
+                                     <?php echo (!empty($master_data)) ? 'readonly="readonly"' : ''; ?>
+                                />   
+                                <label class="text-uppercase">R. to date</label>
+                                <small class="form-text text-muted helper-text" id="hm_to_date_msg"></small>
                             </div>
                             <div class="col-12 col-sm-12 col-md-12 col-lg-12 floating-label">
                                 <p class="text-uppercase">karigar&nbsp;<span class="text-danger">*</span></p>
@@ -113,7 +143,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-sm-12 col-md-8 col-lg-9">
+            <div class="col-12 col-sm-12 col-md-8 col-lg-8">
                 <div class="card mb-3">
                     <div class="card-header text-uppercase">
                         <h5 class="mb-0">
@@ -135,7 +165,10 @@
                                     <tr style="font-weight:bold; font-size: 0.8rem;">
                                         <td class="border-bottom border-top-0" >job&nbsp;no&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td class="border-bottom border-top-0" >job&nbsp;date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                        <td class="border-bottom border-top-0" >receive&nbsp;date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td class="border-bottom border-top-0" >apparel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                         <td class="border-bottom border-top-0" >sku&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                        <td class="border-bottom border-top-0" >ORDER&nbsp;no&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td class="border-bottom border-top-0" >barcode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td class="border-bottom border-top-0" >rate</td>
                                         <td class="border-bottom border-top-0" >remove</td>

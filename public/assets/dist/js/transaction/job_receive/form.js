@@ -82,8 +82,10 @@ const get_barcode_data = (obt_id) => {
 const add_wrapper_data = (data) => {
   const {
     jit_id,
+    jrt_rfd,
     obt_item_code,
     apparel_name,
+    sku_name,
     customer_name,
     entry_no,
     entry_date,
@@ -92,8 +94,10 @@ const add_wrapper_data = (data) => {
     isExist = false,
   } = data;
   let tr = `<tr id="row_${jit_id}">
+              <td><input type="checkbox" name="jrt_rfd" id="jrt_rfd_${jit_id}" onclick="update_trans_data(${jit_id})" value="1" ${jrt_rfd>0?'checked' : '' } ${isExist ? 'disabled' : ''}  style="height: 20px; width: 20px;"></td>
               <td >${obt_item_code}</td>
               <td >${apparel_name}</td>
+              <td >${sku_name}</td>
               <td >${customer_name}</td>
               <td >${entry_no}</td>
               <td >${entry_date}</td>
@@ -117,6 +121,16 @@ const add_wrapper_data = (data) => {
   $("#transaction_wrapper").append(tr);
   trans_data.push(data);
 };
+
+const update_trans_data = (jit_id) => { 
+  const index = trans_data.findIndex((value) => value["jit_id"] == jit_id);
+  let val=0;
+  if($(`#jrt_rfd_${jit_id}`).is(":checked")){
+      val=1;
+  }
+  trans_data[index].jrt_rfd = val;
+};
+
 const remove_transaction = (jit_id) => {
   const find = trans_data.find((value) => value.jit_id == jit_id);
   trans_data = trans_data.filter((value) => value.jit_id != jit_id);

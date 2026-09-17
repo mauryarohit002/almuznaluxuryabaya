@@ -107,7 +107,7 @@
                             />   
                             <label class="text-uppercase">name <span class="text-danger">*</span></label>
                             <small class="form-text text-muted helper-text" id="karigar_name_msg"></small>
-                        </div>
+                        </div> 
                         <div class="col-12 col-sm-12 col-md-6 col-lg-4 floating-label">
                             <p class="text-uppercase">Karigar Type</p>
                             <select 
@@ -117,10 +117,10 @@
                                 placeholder=" " 
                                 tabindex="<?php echo $tabindex++; ?>">
                                 <?php
-                                    $selected_value = isset($master_data[0]['karigar_type_id']) ? $master_data[0]['karigar_type_id'] : 0; // default to 0 (Other)
+                                    $selected_value = isset($master_data[0]['karigar_type_id']) ? $master_data[0]['karigar_type_id'] : 0; 
                                 ?>
-                                <option value="0" <?php echo ($selected_value == 0) ? 'selected' : ''; ?>>Other</option>
-                                <option value="1" <?php echo ($selected_value == 1) ? 'selected' : ''; ?>>Manager</option>
+                                <option value="0" <?php echo ($selected_value == 0) ? 'selected' : ''; ?>>INHOUSE</option>
+                                <option value="1" <?php echo ($selected_value == 1) ? 'selected' : ''; ?>>JOB WORK</option>
                             </select>
                             <small class="form-text text-muted helper-text" id="karigar_type_id_msg"></small>
                         </div> 

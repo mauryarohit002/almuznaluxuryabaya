@@ -9,6 +9,7 @@
                     <td width="3%"><?php echo $key+1; ?></td>
                     <td width="10%"><?php echo $value['karigar_name']; ?></td>
                     <td width="5%"><?php echo $value['karigar_status'] == 1 ? 'active' : 'inactive'; ?></td>
+                    <td width="5%"><?php echo $value['karigar_type_id'] == 0 ? 'INHOUSE' : 'JOB WORK'; ?></td>
                     <?php if(in_array('read', $action_data)): ?>
                         <td width="3%">
                             <a 

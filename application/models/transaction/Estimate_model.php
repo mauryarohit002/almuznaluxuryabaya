@@ -6,10 +6,31 @@ class estimate_model extends my_model{
     public function isExist($id){
         $data = $this->db->query("SELECT om_id FROM order_master WHERE om_delete_status = 0 AND om_allocated_amt > 0 AND om_id = $id LIMIT 1")->result_array();
         if(!empty($data)) return true;
-       
+
+        $data = $this->db->query("SELECT ort_id FROM order_return_trans 
+            WHERE ort_delete_status = 0 AND ort_om_id = $id LIMIT 1")->result_array();
+        if(!empty($data)) return true;
+
+        $data = $this->db->query("SELECT om_id FROM order_master WHERE om_delete_status = 0 AND om_em_entry_date !='".date('Y-m-d')."'
+            AND om_id = $id LIMIT 1")->result_array();
+        if(!empty($data) && $_SESSION['user_role_id']==SALESMAN){
+            return true;
+        } 
+
         return false; 
     }
-    public function isTransExist($id){  
+    public function isTransExist($id){   
+        $query="SELECT om.om_id 
+                FROM order_master om
+                INNER JOIN order_trans ot ON(ot.ot_om_id = om.om_id)
+                WHERE om.om_delete_status = 0 
+                AND ot.ot_delete_status = 0
+                AND om.om_em_entry_date !='".date('Y-m-d')."'
+                AND ot.ot_id = $id 
+                LIMIT 1";
+        $data = $this->db->query($query)->result_array();
+        if(!empty($data)) return true;
+
         $query="SELECT om.om_id 
                 FROM order_master om
                 INNER JOIN order_trans ot ON(ot.ot_om_id = om.om_id)
@@ -19,6 +40,12 @@ class estimate_model extends my_model{
                 AND ot.ot_id = $id 
                 LIMIT 1";
         $data = $this->db->query($query)->result_array();
+        if(!empty($data) && $_SESSION['user_role_id']==SALESMAN){
+            return true;
+        }
+
+        $data = $this->db->query("SELECT ort_id FROM order_return_trans 
+            WHERE ort_delete_status = 0 AND ort_ot_id = $id LIMIT 1")->result_array();
         if(!empty($data)) return true;
 
         return false;
@@ -112,7 +139,6 @@ class estimate_model extends my_model{
     //     return $record;
     // }
     public function get_data_for_add(){
-    
         $entry_no = $this->get_max_entry_no([
             'entry_no'      => 'om_em_entry_no',
             'delete_status' => 'om_delete_status',
@@ -121,12 +147,9 @@ class estimate_model extends my_model{
             'table'         => 'order_master'
         ]);
     
-        // Default old behavior
         $record['om_em_entry_no'] = $entry_no;
-    
-        // Start from 6501 only for branch_id = 3
         if($_SESSION['user_branch_id'] == 3){
-            $record['om_em_entry_no'] = ($entry_no < 6501) ? 6501 : $entry_no;
+            // $record['om_em_entry_no'] = ($entry_no < 6501) ? 6501 : $entry_no;
         }
     
         $record['om_uuid'] = $_SESSION['user_id'] . ''. time();
@@ -278,7 +301,7 @@ class estimate_model extends my_model{
     public function get_readymade_barcode_data($id, $qty = 0){
         $query="SELECT brmm.*,
                 IFNULL(UPPER(size.size_name), '') as size_name,
-                ((brmm.brmm_gt_qty + brmm.brmm_prmt_qty - brmm.brmm_prrt_qty) - (brmm.brmm_outward_qty + brmm.brmm_ot_qty) + $qty) as bal_qty
+                ((brmm.brmm_gt_qty + brmm.brmm_ort_qty + brmm.brmm_prmt_qty - brmm.brmm_prrt_qty) - (brmm.brmm_outward_qty + brmm.brmm_ot_qty) + $qty) as bal_qty
                 FROM barcode_readymade_master brmm
                 LEFT JOIN size_master size ON(size.size_id = brmm.brmm_size_id)
                 WHERE brmm.brmm_id = $id";
@@ -747,25 +770,30 @@ class estimate_model extends my_model{
                     INNER JOIN job_issue_master jim ON(jit.jit_jim_id = jim.jim_id)
                     LEFT JOIN job_receive_trans jrt ON(jrt.jrt_jit_id = jit.jit_id)
                     WHERE jit.jit_delete_status = 0 AND jit.jit_obt_id = obt.obt_id
-                    AND jim.jim_delete_status=0
+                    AND jim.jim_delete_status=0 AND jrt.jrt_rfd=1
                     ORDER BY jit.jit_id DESC
                     LIMIT 1
                     ),0) as process_status,
                 UPPER(apparel.apparel_name) as apparel_name,
+                UPPER(sku.sku_name) as sku_name,
                 obt_delivered
                 FROM order_master om
                 INNER JOIN order_barcode_trans obt ON(obt.obt_om_id = om.om_id)
                 INNER JOIN apparel_master apparel ON(apparel.apparel_id = obt.obt_apparel_id)
+                INNER JOIN order_trans ot ON(obt.obt_ot_id = ot.ot_id)
+                INNER JOIN sku_master sku ON(sku.sku_id = ot.ot_sku_id)
                 WHERE obt.obt_delete_status = 0
                 AND obt.obt_om_id = $om_id
                 ORDER BY apparel.apparel_name ASC";
         $data = $this->db->query($query)->result_array();
         $table = '<form id="estimate_done_form">
-        <table class="table table-sm text-uppercase border">';
+        <table class="table table-sm text-uppercase border">
+            <input type="hidden" name="om_id" value="'.$om_id.'">
+        ';
         if(!empty($data)) {
             $table .="<tr>";
             $table .= "<th width='5%'></th>";
-            $table .= "<th width='10%'>apparel</th>";
+            $table .= "<th width='10%'>SKU</th>";
             $table .= "<th width='15%'>karigar</th>";
             $table .= "<th width='15%'>Process</th>";
             $table .= "<th width='15%'>status</th>";
@@ -789,15 +817,15 @@ class estimate_model extends my_model{
 
                 if($value['process_status'] == 1 && $value['obt_delivered'] == 0)
                 {
-                $table .="<td style='width: 5%;'>
-                        <input type='checkbox' name='estimate_delivery_done[]' ".$estimate_checkbox_event." value='".$estimate_delivery_done."' ".$estimate_delivery_check." />
-                        <input type='hidden' name='obt_id[]' value='".$value['obt_id']."' />
-                    </td>";
+                    $table .="<td style='width: 5%;'>
+                            <input type='checkbox' name='delivery_checkbox[]' ".$estimate_checkbox_event." value='".$estimate_delivery_done."' ".$estimate_delivery_check." />
+                            <input type='hidden' name='obt_id[]' value='".$value['obt_id']."' />
+                        </td>";
                 }
                 else{
                     $table .="<td style='width: 5%;'></td>";
                 }
-                $table .= "<td>".$value['apparel_name']."</td>";
+                $table .= "<td>".$value['sku_name']."</td>";
                 $table .= "<td>".$status_data['karigar_name']."</td>";
                 $table .= "<td>".$status."</td>";
                 $table .= "<td>".$status_data['status']."</td>";

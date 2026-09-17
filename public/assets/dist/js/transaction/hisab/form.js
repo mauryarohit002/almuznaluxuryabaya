@@ -46,7 +46,6 @@ const calculate_master = () => {
   let total_amt = 0;
   trans_data.forEach((value, index) => {
     const { ht_rate } = value;
-
     total_amt = parseFloat(total_amt) + parseFloat(ht_rate);
     if (isNaN(total_amt) || total_amt == "") total_amt = 0;
   });
@@ -66,17 +65,37 @@ const add_wrapper_data = (data) => {
     ht_jrt_id,
     entry_no,
     entry_date,
+    receive_date,
     apparel_name,
+    sku_name,
+    order_no,
     qrcode,
     ht_rate,
     isExist = false,
   } = data;
-  let tr = `<tr id="row_${ht_jrt_id}">
+  let tr = `<tr id="row_${ht_jrt_id}">  
                 <td id="entry_no_${ht_jrt_id}">${entry_no}</td>
                 <td id="entry_date_${ht_jrt_id}">${entry_date}</td>
+                <td id="receive_date_${ht_jrt_id}">${receive_date}</td>
                 <td id="apparel_name_${ht_jrt_id}">${apparel_name}</td>
+                <td id="sku_name_${ht_jrt_id}">${sku_name}</td>
+                <td id="order_no_${ht_jrt_id}">${order_no}</td>
                 <td id="qrcode_${ht_jrt_id}">${qrcode}</td>
-                <td id="rate_${ht_jrt_id}">${ht_rate}</td>
+                <td >
+                 ${ 
+                    isExist
+                      ? `${ht_rate}`
+                      : `<input
+                          class="form-control floating-input"
+                          id="ht_rate_${ht_jrt_id}"
+                          value="${ht_rate}"
+                          onkeyup="update_trans_data(${ht_jrt_id})"
+                          placeholder=" " 
+                          autocomplete="off"
+                          style="width: 4rem; height: 1.5rem;"
+                        />`
+                  } 
+                </td>
                 <td>
                     ${
                       isExist
@@ -93,6 +112,16 @@ const add_wrapper_data = (data) => {
                   </td>
               </tr>`;
   $("#transaction_wrapper").append(tr);
+};
+
+const update_trans_data = (ht_jrt_id) => { 
+  let ht_rate = parseValue($(`#ht_rate_${ht_jrt_id}`).val());
+  const index = trans_data.findIndex((value) => value["ht_jrt_id"] == ht_jrt_id);
+
+  $(`#ht_rate_${ht_jrt_id}`).val(ht_rate);
+  trans_data[index].ht_rate = ht_rate;
+  calculate_master();
+ 
 };
 
 const add_edit = () => {
@@ -183,7 +212,10 @@ const get_job_data = (id) => {
   $("#transaction_wrapper").html("");
   if (!id) return false;
   const path = `${link}/${sub_link}/handler`;
-  const form_data = { func: "get_job_data", id };
+  let from_date= $('#hm_from_date').val();
+  let to_date= $('#hm_to_date').val();
+
+  const form_data = { func: "get_job_data", id,from_date,to_date };
   ajaxCall(
     "POST",
     path,

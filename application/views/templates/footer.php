@@ -44,12 +44,7 @@
 
 <!-- SweetAlert2 -->
 <script src="<?php echo assets('plugins/sweetalert2/js/sweetalert2.min.js')?>"></script>
-
-<!-- Brower-Image-Compressor -->
 <script src="<?php echo assets('plugins/compressor/js/compressor.js')?>"></script>
-
-
-<!-- Custom JS files. Note: Keep the sequence of following custom files -->
 <script type="text/javascript">
 	const loc 			= window.location;
 	const base_url   	= "<?php echo base_url(); ?>";
@@ -62,7 +57,10 @@
 	const OUTSIDE 		= "<?php echo OUTSIDE; ?>";
 	const REFRESH 		= "<?php echo REFRESH; ?>";
 	const PER_PAGE 		= "<?php echo PER_PAGE; ?>";
-	const BARCODE_LENGTH= "<?php echo BARCODE_LENGTH; ?>";
+	const BARCODE_LENGTH = "<?php echo BARCODE_LENGTH; ?>";
+	const session_branch_id = "<?php echo $_SESSION['user_branch_id']; ?>";
+	const SAMPLING_BRANCH = "<?php echo SAMPLING_BRANCH; ?>";
+	
 	const RELOAD_TIME 	= 800;
 </script>
 <script src="<?php echo assets('dist/js/custom/ajax.js?v=1')?>"></script>

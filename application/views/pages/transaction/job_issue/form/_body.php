@@ -92,6 +92,7 @@
                                 <tr>
                                     <th >barcode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
                                     <th >apparel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                                    <th >SKU&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
                                     <th >client&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
                                     <th >order&nbsp;no.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
                                     <th >order&nbsp;date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>

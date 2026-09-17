@@ -225,6 +225,7 @@ LEFT JOIN order_master om ON om.om_id = rot.rot_om_id
         if($om_id > 0){
             $subsql .= " AND om.om_id = $om_id";
         }
+        
         $query="SELECT 0 as rot_id,
                 0 as rot_checked,
                 om.om_id as rot_om_id,
@@ -234,10 +235,10 @@ LEFT JOIN order_master om ON om.om_id = rot.rot_om_id
                 (om.om_total_amt - om.om_advance_amt) as rot_total_amt,
                 om.om_allocated_amt as rot_allocated_amt,
                 0 as rot_adjust_amt,
-                (om.om_total_amt - (om.om_advance_amt + om.om_allocated_amt)) as balance_amt
+                (om.om_total_amt - (om.om_advance_amt + om.om_allocated_amt + om.om_return_amt)) as balance_amt
                 FROM order_master om
                 WHERE om.om_delete_status = 0
-                AND (om.om_total_amt - (om.om_advance_amt + om.om_allocated_amt)) > 0
+                AND (om.om_total_amt - (om.om_advance_amt + om.om_allocated_amt + om.om_return_amt)) > 0
                 AND om.om_customer_id = $customer_id
                 $subsql
                 ORDER BY balance_amt DESC";
@@ -259,7 +260,7 @@ LEFT JOIN order_master om ON om.om_id = rot.rot_om_id
         $query="SELECT SUM(om.om_total_amt - (om.om_advance_amt + om.om_allocated_amt)) as amt
                 FROM order_master om
                 WHERE om.om_delete_status = 0
-                AND (om.om_total_amt - (om.om_advance_amt + om.om_allocated_amt)) > 0
+                AND (om.om_total_amt - (om.om_advance_amt + om.om_allocated_amt + om.om_return_amt)) > 0
                 AND om.om_customer_id = $customer_id
                 $subsql 
                 GROUP BY om.om_customer_id";
@@ -288,7 +289,7 @@ LEFT JOIN order_master om ON om.om_id = rot.rot_om_id
     }
     public function get_order($om_id){
         $query="SELECT om.*,
-                (om.om_total_amt - (om.om_advance_amt + om.om_allocated_amt)) as balance_amt
+                (om.om_total_amt - (om.om_advance_amt + om.om_allocated_amt + om.om_return_amt)) as balance_amt
                 FROM order_master om
                 WHERE om.om_delete_status = 0
                 AND om.om_id = $om_id";

@@ -3,20 +3,6 @@
         <div class="menuToggle" id="menu_toggle_<?php echo $value['om_id']; ?>" onclick="toggle_menuu(this)"></div>
         <div class="menuu">
             <ul>
-                <?php if(in_array('convert_to_order', $action_data)): 
-                    if($value['om_status']==0):?>
-                    <li>
-                        <a 
-                            type="button" 
-                            class="btn btn-sm" 
-                            data-toggle="tooltip" 
-                            data-placement="bottom" 
-                            title="CONVERT TO ORDER"
-                            onclick="convert_to_order(<?php echo $value['om_id']; ?>);"
-                        ><i class="text-info fa fa-newspaper-o"></i></a>										
-                    </li>
-                <?php endif;?> 
-                <?php endif;?> 
                 <li>
                     <a 
                         type="button" 
@@ -48,8 +34,15 @@
                         data-placement="bottom" 
                         title="MEASUREMENT"
                         href="<?php echo base_url($menu.'/'.$sub_menu.'/measurement_print/'.$value['om_id']) ?>"
-                    ><i class="text-info fa fa-print"></i></a>                                        
+                    ><i class="text-info fa fa-print"></i></a>
                 </li>
+                <?php
+                    $editable = true;
+                    if(($_SESSION['user_role_id']==SALESMAN) && ($value['om_em_entry_date'] != date('Y-m-d'))){
+                        $editable=false;
+                    }
+
+                ?>
                 <?php if(in_array('read', $action_data)): ?>
                     <li>
                         <a 
@@ -59,10 +52,10 @@
                             data-placement="bottom" 
                             title="VIEW"
                             href="<?php echo base_url($menu.'/'.$sub_menu.'?action=read&id='.$value['id']); ?>"
-                        ><i class="text-info fa fa-eye"></i></a>										
+                        ><i class="text-info fa fa-eye"></i></a>	
                     </li>
                 <?php endif;?>
-                <?php if(in_array('edit', $action_data)):
+                <?php if(in_array('edit', $action_data) && $editable):
                     if($value['om_status']==0):
                  ?>
                     <li>

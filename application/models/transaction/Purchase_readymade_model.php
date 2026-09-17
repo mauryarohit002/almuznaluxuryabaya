@@ -13,7 +13,7 @@ class purchase_readymade_model extends my_model{
         $data = $this->db->query("SELECT brmm_id FROM barcode_readymade_master WHERE brmm_prmm_id = $id AND (brmm_outward_qty) > 0 LIMIT 1")->result_array();
         if(!empty($data)) return true;
         
-        $data = $this->db->query("SELECT brmm_id FROM barcode_readymade_master WHERE brmm_prmm_id = $id AND (brmm_gt_qty) > 0 LIMIT 1")->result_array();
+        $data = $this->db->query("SELECT brmm_id FROM barcode_readymade_master WHERE brmm_prmm_id = $id AND (brmm_gt_qty+brmm_ort_qty) > 0 LIMIT 1")->result_array();
         if(!empty($data)) return true;
 
         return false; 
@@ -28,7 +28,7 @@ class purchase_readymade_model extends my_model{
         $data = $this->db->query("SELECT brmm_id FROM barcode_readymade_master WHERE brmm_prmt_id = $id AND (brmm_outward_qty) > 0 LIMIT 1")->result_array();
         if(!empty($data)) return true;
         
-        $data = $this->db->query("SELECT brmm_id FROM barcode_readymade_master WHERE brmm_prmt_id = $id AND (brmm_gt_qty) > 0 LIMIT 1")->result_array();
+        $data = $this->db->query("SELECT brmm_id FROM barcode_readymade_master WHERE brmm_prmt_id = $id AND (brmm_gt_qty+brmm_ort_qty) > 0 LIMIT 1")->result_array();
         if(!empty($data)) return true;
         
         return false;
@@ -43,7 +43,7 @@ class purchase_readymade_model extends my_model{
         $data = $this->db->query("SELECT brmm_id FROM barcode_readymade_master WHERE brmm_id = $id AND (brmm_outward_qty) > 0 LIMIT 1")->result_array();
         if(!empty($data)) return true;
         
-        $data = $this->db->query("SELECT brmm_id FROM barcode_readymade_master WHERE brmm_id = $id AND (brmm_gt_qty) > 0 LIMIT 1")->result_array();
+        $data = $this->db->query("SELECT brmm_id FROM barcode_readymade_master WHERE brmm_id = $id AND (brmm_gt_qty+brmm_ort_qty) > 0 LIMIT 1")->result_array();
         if(!empty($data)) return true;
         
         return false;

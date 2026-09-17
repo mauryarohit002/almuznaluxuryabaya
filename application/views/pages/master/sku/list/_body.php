@@ -8,7 +8,7 @@
                     $cnt++;
                     $id = encrypt_decrypt("encrypt", $value['sku_id'], SECRET_KEY);
                     $text_status = $value['sku_status'] == 0 ? 'border-danger' :'';
-            ?>
+                ?>
                         <td width="25%" class="border-0">
                             <div class="d-flex flex-wrap justify-content-center mt-2" style="min-height: 10rem;">
                                 <div class="card d-flex justify-content-between neu_flat_primary">
@@ -56,7 +56,7 @@
                                                             <td width="60%">: <?php echo $value['sku_status'] == 1 ? 'ACTIVE' : 'INACTIVE'; ?></td>
                                                         </tr>
                                                         <tr>
-                                                            <th width="40%">
+                                                            <th width="30%">
                                                                 <?php if(in_array('edit', $action_data)): ?>
                                                                     <a 
                                                                         type="button" 
@@ -68,7 +68,7 @@
                                                                     ><i class="text-success fa fa-edit"></i></a>
                                                                 <?php endif; ?>
                                                             </th>
-                                                            <td width="60%">
+                                                            <td width="40%">
                                                                 <?php if(in_array('delete', $action_data)): ?>
                                                                     <?php if($value['isExist']): ?>
                                                                         <button 
@@ -100,8 +100,20 @@
                                                                         title="READ" 
                                                                         href="<?php echo base_url($menu.'/'.$sub_menu.'?action=read&id='.$id); ?>"
                                                                     ><i class="text-info fa fa-eye"></i></a>										
-                                                                <?php endif; ?>											                                        
+                                                                <?php endif; ?>			                                        
                                                             </td>
+                                                            <th width="30%">
+                                                                <?php if(in_array('edit', $action_data)): ?>
+                                                                    <a 
+                                                                        type="button" 
+                                                                        class="btn btn-sm btn-primary" 
+                                                                        data-toggle="tooltip" 
+                                                                        data-placement="bottom" 
+                                                                        title="UPDATE PRICE"
+                                                                        onclick="sku_popup(<?php echo $value['sku_id']?>)"
+                                                                    ><i class="text-success fa fa-eye"></i></a>
+                                                                <?php endif; ?>
+                                                            </th>
                                                         </tr>
                                                     </tbody>
                                                 </table>

@@ -5,17 +5,26 @@
                 $id = encrypt_decrypt("encrypt", $value['jrm_id'], SECRET_KEY);
     ?>
 
-                <tr>
+                <tr>  
                     <td width="3%"><?php echo $key+1; ?></td>
                     <td width="5%"><?php echo $value['jrm_entry_no']; ?></td>
                     <td width="8%"><?php echo date('d-m-Y', strtotime($value['jrm_entry_date'])); ?></td>
+                    <td width="5%"><?php echo $value['order_no']; ?></td>
+                    <td width="8%"><?php echo date('d-m-Y', strtotime($value['order_date'])); ?></td>
+                    <td width="8%"><?php echo $value['obt_item_code']; ?></td>
+                    <td width="10%"><?php echo $value['sku_name']; ?></td>
+                    <td width="8%"><?php echo $value['proces_name']; ?></td>
+                    <td width="10%"><?php echo $value['karigar_name']; ?></td>
+                  <!--   <td width="8%"><a type="button" class="btn btn-sm btn-primary" href="javascript:void(0)" onclick="view_details(<?php echo $value['jrm_id']?>)" 
+                            ><i class="text-primary fa fa-eye"></i></a></td>
+ -->
                     <?php if(in_array('edit', $action_data)): ?>
                         <td width="3%">
                             <a 
                                 type="button" 
                                 class="btn btn-sm btn-primary" 
                                 href="<?php echo base_url($menu.'/'.$sub_menu.'?action=edit&id='.$id); ?>"
-                            ><i class="text-success fa fa-edit"></i></a>										
+                            ><i class="text-success fa fa-edit"></i></a>                                        
                         </td>
                     <?php endif;?>
                     <?php if(in_array('delete', $action_data)): ?>

@@ -69,44 +69,17 @@ class apparel extends my_controller{
 		return['session' => TRUE, 'status' => TRUE, 'data' => $data,  'msg' => $msg];
 	}
 
-	// public function temp_funtion(){
-	// 	$data = $this->db_operations->get_recordlist('barcode_master');
-	// 	foreach ($data as $key => $value) {
-	// 	$cost_char='';	
-	// 		$str = $value['bm_pt_rate'];
-	// 		$length = strlen($str);
-			
-	// 		// echo "<pre>";print_r(str_split($str)[0]);die;
-	// 		for ($i = 0; $i < $length; $i++) {
-	// 			if(str_split($str)[$i]=='0'){
-	// 				$char='D';
-	// 			}else if(str_split($str)[$i]==1){
-	// 				$char='P';
-	// 			}else if(str_split($str)[$i]==2){
-	// 				$char='R';
-	// 			}else if(str_split($str)[$i]==3){
-	// 				$char='A';
-	// 			}else if(str_split($str)[$i]==4){
-	// 				$char='N';
-	// 			}else if(str_split($str)[$i]==5){
-	// 				$char='S';
-	// 			}else if(str_split($str)[$i]==6){
-	// 				$char='H';
-	// 			}else if(str_split($str)[$i]==7){
-	// 				$char='V';
-	// 			}else if(str_split($str)[$i]==8){
-	// 				$char='I';
-	// 			}else if(str_split($str)[$i]==9){
-	// 				$char='G';
-	// 			}else if(str_split($str)[$i]=="."){
-	// 				$char=".";
-	// 			}
-	// 		$cost_char.=$char;	
-	// 		}
-	// 	$this->db_operations->data_update('barcode_master',['bm_cost_char'=>$cost_char],'bm_id',$value['bm_id']);	
-			
-	// 	}	
-	// }
+    public function temp_funtion(){
+		$data = $this->db_operations->get_record('barcode_readymade_master',['brmm_delete_status'=>0]);
+		$resp=[];
+		foreach ($data as $key => $value) {
+			$cnt = $this->db_operations->get_cnt('purchase_readymade_trans',['prmt_id'=>$value['brmm_prmt_id'],'prmt_delete_status'=>0]);
+			if($cnt==0){
+				array_push($resp, $value['brmm_id']);
+			}	
+		}
+		echo "<pre>"; print_r($resp);die;	
+	}
 	
 }
 ?>

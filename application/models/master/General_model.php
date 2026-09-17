@@ -37,8 +37,10 @@ class general_model extends my_model{
         }
         $query="SELECT general.general_id, 
                 UPPER(general.general_name) as general_name, 
+                UPPER(grp.grp_name) as grp_name,
                 general.general_status
                 FROM general_master general
+                LEFT JOIN grp_master grp ON(grp.grp_id=general.general_grp_id)
                 WHERE 1
                 $subsql
                 ORDER BY general.general_id DESC
@@ -57,8 +59,10 @@ class general_model extends my_model{
         return $record;
     }
 	public function get_data($id){
-        $query="SELECT general.*
+        $query="SELECT general.*,
+                UPPER(grp.grp_name) as grp_name
                 FROM general_master general
+                LEFT JOIN grp_master grp ON(grp.grp_id=general.general_grp_id)
                 WHERE general.general_id = $id";
         return $this->db->query($query)->result_array();
     }

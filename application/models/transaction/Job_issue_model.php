@@ -9,10 +9,9 @@ class job_issue_model extends my_model{
 
         return false;
     }
-	public function isTransExist($id){ 
+	public function isTransExist($id){  
         $data = $this->db->query("SELECT jrt_id FROM job_receive_trans WHERE jrt_jit_id = $id AND jrt_delete_status = 0 LIMIT 1")->result_array();
         if(!empty($data)) return true;
-
         return false;
     }
     public function get_list($wantCount, $per_page = 20, $offset = 0){
@@ -26,15 +25,30 @@ class job_issue_model extends my_model{
             $ofset .= " OFFSET $offset";
         }
         
-        if(isset($_GET['_entry_no']) && !empty($_GET['_entry_no'])){
+         if(isset($_GET['_entry_no']) && !empty($_GET['_entry_no'])){
             $subsql .=" AND jim.jim_entry_no = '".$_GET['_entry_no']."'";
             $record['filter']['_entry_no']['value'] = $_GET['_entry_no'];
             $record['filter']['_entry_no']['text'] = $_GET['_entry_no'];
+        }
+        if(isset($_GET['_order_no']) && !empty($_GET['_order_no'])){ 
+            $subsql .=" AND om.om_id = '".$_GET['_order_no']."'";
+            $record['filter']['_order_no']['value'] = $_GET['_order_no'];
+            $record['filter']['_order_no']['text'] = $_GET['_order_no'];
         }
 		if(isset($_GET['_proces_name']) && !empty($_GET['_proces_name'])){
             $subsql .=" AND proces.proces_name = '".$_GET['_proces_name']."'";
             $record['filter']['_proces_name']['value'] = $_GET['_proces_name'];
             $record['filter']['_proces_name']['text'] = $_GET['_proces_name'];
+        }
+        if(isset($_GET['_customer_name']) && !empty($_GET['_customer_name'])){
+            $subsql .=" AND customer.customer_name = '".$_GET['_customer_name']."'";
+            $record['filter']['_customer_name']['value'] = $_GET['_customer_name'];
+            $record['filter']['_customer_name']['text'] = $_GET['_customer_name'];
+        }
+        if(isset($_GET['_item_code']) && !empty($_GET['_item_code'])){
+            $subsql .=" AND obt.obt_item_code = '".$_GET['_item_code']."'";
+            $record['filter']['_item_code']['value'] = $_GET['_item_code'];
+            $record['filter']['_item_code']['text'] = $_GET['_item_code'];
         }
         if(isset($_GET['_karigar_name']) && !empty($_GET['_karigar_name'])){
             $subsql .=" AND karigar.karigar_name = '".$_GET['_karigar_name']."'";
@@ -49,15 +63,37 @@ class job_issue_model extends my_model{
             $_entry_date_to = date('Y-m-d', strtotime($_GET['_entry_date_to']));
             $subsql .= " AND jim.jim_entry_date <= '".$_entry_date_to."'";
         }
+
+        if(isset($_GET['_order_date_from']) && !empty($_GET['_order_date_from'])){
+            $_order_date_from = date('Y-m-d', strtotime($_GET['_order_date_from']));
+            $subsql .= " AND om.om_em_entry_date >= '".$_order_date_from."'";
+        }
+        if(isset($_GET['_order_date_to']) && !empty($_GET['_order_date_to'])){
+            $_order_date_to = date('Y-m-d', strtotime($_GET['_order_date_to']));
+            $subsql .= " AND om.om_em_entry_date <= '".$_order_date_to."'";
+        }    
+        
 		$query="SELECT jim.*,
-                DATE_FORMAT(jim.jim_entry_date, '%d-%m-%Y') as entry_date,
+                jit.jit_id,
+				DATE_FORMAT(jim.jim_entry_date, '%d-%m-%Y') as entry_date,
+                obt.obt_item_code,
+                om.om_em_entry_no as order_no,
+                DATE_FORMAT(om.om_em_entry_date, '%d-%m-%Y') as order_date,
+                 UPPER(sku.sku_name) as sku_name, 
                 UPPER(proces.proces_name) as proces_name,
                 UPPER(karigar.karigar_name) as karigar_name
                 FROM job_issue_master jim
                 INNER JOIN proces_master proces ON(proces.proces_id = jim.jim_proces_id)
                 INNER JOIN karigar_master karigar ON(karigar.karigar_id = jim.jim_karigar_id)
-                WHERE jim.jim_delete_status = 0
+                INNER JOIN job_issue_trans jit ON(jit.jit_jim_id = jim.jim_id)
+                INNER JOIN order_barcode_trans obt ON(obt.obt_id = jit.jit_obt_id)
+                INNER JOIN apparel_master apparel ON(apparel.apparel_id = obt.obt_apparel_id)
+                INNER JOIN order_master om ON(om.om_id = obt.obt_om_id)
+                INNER JOIN order_trans ot ON(ot.ot_id = obt.obt_ot_id)
+                INNER JOIN sku_master sku ON(sku.sku_id = ot.ot_sku_id)
+                WHERE jim.jim_delete_status = 0 AND jit.jit_delete_status = 0
                 $subsql
+                GROUP BY jit.jit_id
                 ORDER BY jim.jim_id DESC
                 $limit
                 $ofset";
@@ -89,10 +125,11 @@ class job_issue_model extends my_model{
         }
         return $record;
     }
-	public function get_transaction($jim_id){
+	public function get_transaction($jim_id){ 
         $query="SELECT jit.jit_id,
 				obt.*,
                 UPPER(apparel.apparel_name) as apparel_name,
+                UPPER(sku.sku_name) as sku_name,
                 UPPER(customer.customer_name) as customer_name,
                 om.om_em_entry_no as entry_no,
                 DATE_FORMAT(om.om_em_entry_date, '%d-%m-%Y') as entry_date
@@ -100,8 +137,9 @@ class job_issue_model extends my_model{
 				INNER JOIN order_barcode_trans obt ON(obt.obt_id = jit.jit_obt_id)
                 INNER JOIN order_master om ON(om.om_id = obt.obt_om_id)
                 INNER JOIN customer_master customer ON(customer.customer_id = om.om_customer_id)
-                INNER JOIN order_trans ot ON(ot.ot_id = obt.obt_ot_id)
+                INNER JOIN order_trans ot ON(ot.ot_id = obt.obt_ot_id) 
                 INNER JOIN apparel_master apparel ON(apparel.apparel_id = ot.ot_apparel_id)
+                LEFT JOIN sku_master sku ON(sku.sku_id = ot.ot_sku_id)
                 WHERE jit.jit_delete_status = 0
 				AND jit.jit_jim_id = $jim_id";
         $record = $this->db->query($query)->result_array();
@@ -116,6 +154,7 @@ class job_issue_model extends my_model{
         $query="SELECT 0 as jit_id,
 				obt.*,
                 UPPER(apparel.apparel_name) as apparel_name,
+                UPPER(sku.sku_name) as sku_name,
                 UPPER(customer.customer_name) as customer_name,
                 om.om_em_entry_no as entry_no,
                 DATE_FORMAT(om.om_em_entry_date, '%d-%m-%Y') as entry_date
@@ -124,12 +163,14 @@ class job_issue_model extends my_model{
                 INNER JOIN customer_master customer ON(customer.customer_id = om.om_customer_id)
                 INNER JOIN order_trans ot ON(ot.ot_id = obt.obt_ot_id)
                 INNER JOIN apparel_master apparel ON(apparel.apparel_id = ot.ot_apparel_id)
+                LEFT JOIN sku_master sku ON(sku.sku_id = ot.ot_sku_id)
                 WHERE obt.obt_id = $id";
         return $this->db->query($query)->result_array();
     }
-    public function get_latest_data($id){
+    public function get_latest_data($id){ 
         $query="SELECT jim.*,
 				IFNULL(jrt.jrt_id, 0) as jrt_id,
+                proces.proces_id,
 				UPPER(proces.proces_name) as proces_name
                 FROM job_issue_master jim
 				INNER JOIN job_issue_trans jit ON(jit.jit_jim_id = jim.jim_id)
@@ -138,6 +179,23 @@ class job_issue_model extends my_model{
                 WHERE jim.jim_delete_status = 0
 				AND jit.jit_delete_status = 0
 				AND jit.jit_obt_id = $id
+                ORDER BY jit.jit_id DESC
+                LIMIT 1";
+        return $this->db->query($query)->result_array();
+    }
+
+    public function get_process_exist($id,$proces_id){ 
+        $query="SELECT jim.*,
+                IFNULL(jrt.jrt_id, 0) as jrt_id,
+                UPPER(proces.proces_name) as proces_name
+                FROM job_issue_master jim
+                INNER JOIN job_issue_trans jit ON(jit.jit_jim_id = jim.jim_id)
+                INNER JOIN proces_master proces ON(proces.proces_id = jim.jim_proces_id)
+                LEFT JOIN job_receive_trans jrt ON(jrt.jrt_jit_id = jit.jit_id)
+                WHERE jim.jim_delete_status = 0
+                AND jit.jit_delete_status = 0
+                AND jit.jit_obt_id = $id
+                AND jim.jim_proces_id = $proces_id
                 ORDER BY jit.jit_id DESC
                 LIMIT 1";
         return $this->db->query($query)->result_array();
@@ -278,35 +336,36 @@ class job_issue_model extends my_model{
 		// echo $query; exit();
 		return $this->db->query($query)->result_array();
 	}
-    public function _order_no(){
-		$subsql = "";
-		$limit  = PER_PAGE;
-		$offset = OFFSET;
-		$page 	= 1;
-		if(isset($_GET['limit']) && !empty($_GET['limit'])){
-			$limit = $_GET['limit'];
-		}
-		if(isset($_GET['page']) && !empty($_GET['page'])){
-			$page 	= $_GET['page'];
-			$offset = $limit * ($page - 1);
-		}
-		if(isset($_GET['name']) && !empty($_GET['name'])){
-			$name 	= $_GET['name'];
-			$subsql .= " AND (om.om_em_entry_no LIKE '%".$name."%') ";
-		}
-		$query="SELECT om.om_em_entry_no as id, UPPER(om.om_em_entry_no) as name
-				FROM job_issue_master jim
-				INNER JOIN order_barcode_trans obt ON(obt.obt_id = jim.jim_obt_id)
+    public function _order_no(){ 
+        $subsql = "";
+        $limit  = PER_PAGE;
+        $offset = OFFSET;
+        $page   = 1;
+        if(isset($_GET['limit']) && !empty($_GET['limit'])){
+            $limit = $_GET['limit'];
+        }
+        if(isset($_GET['page']) && !empty($_GET['page'])){
+            $page   = $_GET['page'];
+            $offset = $limit * ($page - 1);
+        }
+        if(isset($_GET['name']) && !empty($_GET['name'])){
+            $name   = $_GET['name'];
+            $subsql .= " AND (om.om_em_entry_no LIKE '".$name."%') ";
+        }
+        $query="SELECT om.om_id as id, 
+                om_em_entry_no as name
+                FROM job_issue_trans jit
+                INNER JOIN order_barcode_trans obt ON(obt.obt_id = jit.jit_obt_id)
                 INNER JOIN order_master om ON(om.om_id = obt.obt_om_id)
-				WHERE jim.jim_delete_status = 0
-				AND om.om_delete_status = 0
-				$subsql
-				GROUP BY om.om_em_entry_no ASC
-				LIMIT $limit
-				OFFSET $offset";
-		// echo $query; exit();
-		return $this->db->query($query)->result_array();
-	}
+                WHERE jit.jit_delete_status = 0
+                AND om.om_delete_status = 0
+                $subsql
+                GROUP BY om.om_em_entry_no ASC
+                LIMIT $limit
+                OFFSET $offset";
+        // echo $query; exit();
+        return $this->db->query($query)->result_array();
+    }
     public function _proces_name(){
 		$subsql = "";
 		$limit  = PER_PAGE;
@@ -335,33 +394,33 @@ class job_issue_model extends my_model{
 		return $this->db->query($query)->result_array();
 	}
 	public function _item_code(){
-		$subsql = "";
-		$limit  = PER_PAGE;
-		$offset = OFFSET;
-		$page 	= 1;
-		if(isset($_GET['limit']) && !empty($_GET['limit'])){
-			$limit = $_GET['limit'];
-		}
-		if(isset($_GET['page']) && !empty($_GET['page'])){
-			$page 	= $_GET['page'];
-			$offset = $limit * ($page - 1);
-		}
-		if(isset($_GET['name']) && !empty($_GET['name'])){
-			$name 	= $_GET['name'];
-			$subsql .= " AND (obt.obt_item_code LIKE '%".$name."%') ";
-		}
-		$query="SELECT obt.obt_item_code as id, UPPER(obt.obt_item_code) as name
-				FROM job_issue_master jim
-                INNER JOIN order_barcode_trans obt ON(obt.obt_id = jim.jim_obt_id)
-				WHERE jim.jim_delete_status = 0
-				AND obt.obt_delete_status = 0
-				$subsql
-				GROUP BY obt.obt_item_code ASC
-				LIMIT $limit
-				OFFSET $offset";
-		// echo $query; exit();
-		return $this->db->query($query)->result_array();
-	}
+        $subsql = "";
+        $limit  = PER_PAGE;
+        $offset = OFFSET;
+        $page   = 1;
+        if(isset($_GET['limit']) && !empty($_GET['limit'])){
+            $limit = $_GET['limit'];
+        }
+        if(isset($_GET['page']) && !empty($_GET['page'])){
+            $page   = $_GET['page'];
+            $offset = $limit * ($page - 1);
+        }
+        if(isset($_GET['name']) && !empty($_GET['name'])){
+            $name   = $_GET['name'];
+            $subsql .= " AND (obt.obt_item_code LIKE '".$name."%') ";
+        }
+        $query="SELECT obt.obt_item_code as id, UPPER(obt.obt_item_code) as name
+                FROM job_issue_trans jit
+                INNER JOIN order_barcode_trans obt ON(obt.obt_id = jit.jit_obt_id)
+                WHERE jit.jit_delete_status = 0
+                AND obt.obt_delete_status = 0
+                $subsql
+                GROUP BY obt.obt_item_code ASC
+                LIMIT $limit
+                OFFSET $offset";
+        // echo $query; exit();
+        return $this->db->query($query)->result_array();
+    }
 	public function _apparel_name(){
 		$subsql = "";
 		$limit  = PER_PAGE;

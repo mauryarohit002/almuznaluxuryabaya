@@ -55,25 +55,6 @@
         </div>
     </div>
 
-    <!-- PAYMENT -->
-    <!-- <div class="col-12 col-md-6 col-lg-3 mb-3">
-        <div class="card h-100">
-            <div class="card-header text-center font-weight-bold">PAYMENT</div>
-            <div class="card-body p-2">
-                <?php if(!empty($data['payment_payment'])): ?>
-                    <?php foreach ($data['payment_payment'] as $value): ?>
-                        <div class="d-flex justify-content-between border-bottom py-1">
-                            <span><?php echo $value['payment_mode_name'] ?></span>
-                            <b><?php echo $value['payment_mode_amt'] ?></b>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="text-center text-danger">No Data</div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div> -->
-
     <!-- GENERAL -->
     <div class="col-12 col-md-6 col-lg-3 mb-3">
         <div class="card h-100">
@@ -84,6 +65,25 @@
                         <div class="d-flex justify-content-between border-bottom py-1">
                             <span><?php echo $value['payment_mode_name'] ?></span>
                             <b><?php echo $value['payment_mode_amt'] ?></b>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="text-center text-danger">No Data</div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOOKING -->
+    <div class="col-12 col-md-6 col-lg-3 mb-3">
+        <div class="card h-100">
+            <div class="card-header text-center font-weight-bold">BOOKING TYPE</div>
+            <div class="card-body p-2">
+                <?php if(!empty($data['booking_data'])): ?>
+                    <?php foreach ($data['booking_data'] as $value): ?>
+                        <div class="d-flex justify-content-between border-bottom py-1">
+                            <span><?php echo $value['ot_trans_type'] ?></span>
+                            <b><?php echo $value['total_count'] ?></b>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>

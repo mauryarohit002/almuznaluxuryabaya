@@ -1,6 +1,5 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
 /*
 |--------------------------------------------------------------------------
 | Display Debug backtrace
@@ -12,7 +11,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 defined('SHOW_DEBUG_BACKTRACE') OR define('SHOW_DEBUG_BACKTRACE', TRUE);
-
 /*
 |--------------------------------------------------------------------------
 | File and Directory Modes
@@ -30,7 +28,6 @@ defined('FILE_READ_MODE')  OR define('FILE_READ_MODE', 0644);
 defined('FILE_WRITE_MODE') OR define('FILE_WRITE_MODE', 0666);
 defined('DIR_READ_MODE')   OR define('DIR_READ_MODE', 0755);
 defined('DIR_WRITE_MODE')  OR define('DIR_WRITE_MODE', 0755);
-
 /*
 |--------------------------------------------------------------------------
 | File Stream Modes
@@ -47,7 +44,6 @@ defined('FOPEN_WRITE_CREATE')                   OR define('FOPEN_WRITE_CREATE', 
 defined('FOPEN_READ_WRITE_CREATE')              OR define('FOPEN_READ_WRITE_CREATE', 'a+b');
 defined('FOPEN_WRITE_CREATE_STRICT')            OR define('FOPEN_WRITE_CREATE_STRICT', 'xb');
 defined('FOPEN_READ_WRITE_CREATE_STRICT')       OR define('FOPEN_READ_WRITE_CREATE_STRICT', 'x+b');
-
 /*
 |--------------------------------------------------------------------------
 | Exit Status Codes
@@ -116,4 +112,14 @@ defined('LIVE_DOMAIN')          OR define('LIVE_DOMAIN', 'https://rsupport.in/')
 defined('LOCAL_DOMAIN')         OR define('LOCAL_DOMAIN', 'http://localhost/');
 defined('BARCODE_LENGTH')       OR define('BARCODE_LENGTH', 12);
 defined('MATERIAL')       		OR define('MATERIAL', 3);
+// PROCESS
+defined('FABRIC')       		OR define('FABRIC', 1);
+defined('CUTTING')       		OR define('CUTTING', 2);
+defined('STITCH')       		OR define('STITCH', 3);
+defined('STONE')       			OR define('STONE', 4);
+defined('LAGWAY')       		OR define('LAGWAY', 5);
+defined('HAND_WORK')       		OR define('HAND_WORK', 6);
+defined('SALESMAN')      		OR define('SALESMAN', 6);
+defined('SAMPLING_BRANCH')      OR define('SAMPLING_BRANCH', 6);
 
+defined('API_ACCESS_KEY')       OR define('API_ACCESS_KEY', 'ZkC6BDUzxz'); // api access key

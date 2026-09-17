@@ -3,21 +3,27 @@
         if(!empty($data)): 
             foreach ($data as $key => $value):
                 $id = encrypt_decrypt("encrypt", $value['jim_id'], SECRET_KEY);
-    ?>
+                $tr_qty ='';
+                $color ='';
+            ?> 
 
-                <tr>
+                <tr style="color: <?php echo $color?>"> 
                     <td width="3%"><?php echo $key+1; ?></td>
                     <td width="5%"><?php echo $value['jim_entry_no']; ?></td>
                     <td width="8%"><?php echo date('d-m-Y', strtotime($value['jim_entry_date'])); ?></td>
-                    <td width="10%"><?php echo $value['proces_name']; ?></td>
-                    <td width="10%"><?php echo $value['karigar_name']; ?></td>
+                    <td width="5%"><?php echo $value['order_no']; ?></td>
+                    <td width="8%"><?php echo date('d-m-Y', strtotime($value['order_date'])); ?></td>
+                    <td width="8%"><?php echo $value['obt_item_code']; ?></td>
+                    <td width="8%"><?php echo $value['sku_name']; ?></td>
+                    <td width="8%"><?php echo $value['proces_name']; ?></td>
+                    <td width="8%"><?php echo $value['karigar_name']; ?></td>
                     <?php if(in_array('edit', $action_data)): ?>
                         <td width="3%">
                             <a 
                                 type="button" 
                                 class="btn btn-sm btn-primary" 
                                 href="<?php echo base_url($menu.'/'.$sub_menu.'?action=edit&id='.$id); ?>"
-                            ><i class="text-success fa fa-edit"></i></a>										
+                            ><i class="text-success fa fa-edit"></i></a>                                        
                         </td>
                     <?php endif;?>
                     <?php if(in_array('delete', $action_data)): ?>

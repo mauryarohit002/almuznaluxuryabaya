@@ -11,7 +11,7 @@ class estimate extends my_controller{
 
         parent::__construct($this->menu, $this->sub_menu); 
     }
-    public function remove(){
+    public function remove(){ 
         $post_data  = $this->input->post();
         $id         = $post_data['id'];
         $result     = isMenuAssigned($this->menu, $this->sub_menu, 'delete');
@@ -290,7 +290,7 @@ class estimate extends my_controller{
                 $master_data['om_balance_amt']              = trim($post_data['om_balance_amt']);
                 $master_data['om_updated_by']               = $_SESSION['user_id'];
             // master_data
-                $cnt =$this->db_operations->get_cnt('order_master',['om_id!='=>$id,'om_em_entry_no'=>$master_data['om_em_entry_no'],'om_fin_year'=>$_SESSION['fin_year'],'om_delete_status'=>0]);
+                $cnt =$this->db_operations->get_cnt('order_master',['om_id!='=>$id,'om_em_entry_no'=>$master_data['om_em_entry_no'],'om_fin_year'=>$_SESSION['fin_year'],'om_branch_id'=>$_SESSION['user_branch_id'],'om_delete_status'=>0]);
                 if($cnt>0){
                      return ['msg' => 'Duplicate Orde No found!!'];
                 }
@@ -386,15 +386,17 @@ class estimate extends my_controller{
             if(!isset($post_data['rate']) || (isset($post_data['rate']) && empty($post_data['rate']))){
                 return ['msg' => '1. Rate is required.'];
             }else{
-                if($post_data['rate'] <= 0) return ['msg' => '1. Invalid Rate.'];   
+                if($_SESSION['user_branch_id'] !=SAMPLING_BRANCH){
+                    if($post_data['rate'] <= 0) return ['msg' => '1. Invalid Rate.'];   
+                }
             }
             
             // echo "<pre>"; print_r($post_data); exit;
             $trans_data                     = [];
             $trans_data['ot_om_uuid']    = trim($post_data['om_uuid']);
             $trans_data['ot_trans_type'] = isset($post_data['trans_type']) ? $post_data['trans_type'] : 0;
-            $trans_data['ot_sku_id']     = isset($post_data['sku_id']) ? $post_data['sku_id'] : 0;
-            $trans_data['ot_apparel_id'] = isset($post_data['apparel_id']) ? $post_data['apparel_id'] : 0;
+            $trans_data['ot_sku_id']    = isset($post_data['sku_id']) ? $post_data['sku_id'] : 0;
+            $trans_data['ot_apparel_id']= isset($post_data['apparel_id']) ? $post_data['apparel_id'] : 0;
 
             if($post_data['trans_type'] == "READYMADE" && !empty($post_data['brmm_id']))
             {
@@ -429,7 +431,12 @@ class estimate extends my_controller{
             $trans_data['ot_created_at'] = date('Y-m-d H:i:s');
             $trans_data['ot_updated_at'] = date('Y-m-d H:i:s');
 
-            if(empty($post_data['ot_id'])){
+            if(empty($post_data['ot_id'])){ 
+                $sku = $this->db_operations->get_record('sku_master',['sku_id'=>$trans_data['ot_sku_id']]);
+                if(!empty($sku)){
+                    $trans_data['ot_sku_cp'] = $sku[0]['sku_cp']; 
+                }
+                
                 $trans_data['ot_id'] = $this->db_operations->data_insert('order_trans', $trans_data);
                 if($trans_data['ot_id'] < 1) return ['msg' => '1. Estimate Transaction not added.'];
                 $trans_data['isExist'] = false;
@@ -500,10 +507,11 @@ class estimate extends my_controller{
                     } 
                 }
             }
-            foreach ($post_data['trans_data'] as $key => $value){ 
+            foreach ($post_data['trans_data'] as $key => $value){  
                 $trans_data                         = [];
                 $trans_data['ot_om_id']             = $id;
                 $trans_data['ot_apparel_id']        = $value['ot_apparel_id'];
+                $trans_data['ot_sku_id']            = $value['ot_sku_id'];
                 $trans_data['ot_bm_id']             = $value['ot_bm_id'];
                 $trans_data['ot_brmm_id']           = $value['ot_brmm_id'];
                 $trans_data['ot_size_id']           = $value['ot_size_id'];
@@ -579,6 +587,7 @@ class estimate extends my_controller{
                     $trans_data['ot_ot_id']             = $value['ot_ot_id'];
                     $trans_data['ot_trans_type']        = $value['ot_trans_type'];
                     $trans_data['ot_apparel_id']        = $value['ot_apparel_id'];
+                    $trans_data['ot_sku_id']            = $value['ot_sku_id'];
                     $trans_data['ot_size_id']           = $value['ot_size_id'];
                     $trans_data['ot_qty']               = $value['ot_qty'];
                     $trans_data['ot_description']       = $value['ot_description'];
@@ -687,10 +696,12 @@ class estimate extends my_controller{
                         $barcode_master['obt_counter'] = $this->model->generate_barcode();
                         $barcode_master['obt_item_code'] = $year . $month . $barcode_master['obt_counter'];
                         $barcode_master['obt_roll_no'] = $barcode_master['obt_item_code'];
-                        $barcode_master['obt_om_id']            = $trans_data['ot_om_id'];
+                        $barcode_master['obt_om_id']     = $trans_data['ot_om_id'];
                         $barcode_master['obt_ot_id']            = $trans_data['ot_id'];
                         $barcode_master['obt_apparel_id'] = $trans_data['ot_apparel_id']; 
                         $barcode_master['obt_apparel_id1'] =$trans_data['ot_apparel_id']; 
+                        $barcode_master['obt_sku_id']       = $trans_data['ot_sku_id']; 
+
                         $barcode_master['obt_qty'] = 1;
 
                         $barcode_master['obt_rate'] = $trans_data['ot_rate'];
@@ -882,17 +893,25 @@ class estimate extends my_controller{
         }
         public function update_delivery_status(){
             $post_data  = $this->input->post();
-
-            // print_r($post_data); exit;
-            if(!empty($post_data)){
-                foreach ($post_data['obt_id'] as $key => $value){
-
+            if(empty($post_data['delivery_checkbox'])){
+                echo json_encode(['status' => FALSE, 'data' => [], 'msg' => 'data not selected! Please select atleast one.']);
+                return;
+            }
+            // echo "<pre>"; print_r($post_data); exit;
+            if(!empty($post_data)){ 
+                foreach ($post_data['delivery_checkbox'] as $key => $value){
                     $barcode_trans_data['obt_delivered'] 	= 1;
-
-                    if($this->db_operations->data_update('order_barcode_trans', $barcode_trans_data, 'obt_id', $value) < 1){
+                    $obt_id = $post_data['obt_id'][$key];
+                    if($this->db_operations->data_update('order_barcode_trans', $barcode_trans_data, 'obt_id', $obt_id) < 1){
                         echo json_encode(['status' => FALSE,'msg' => 'Process not updated.']);
                     }
                 }
+
+                $cnt_data = $this->db_operations->get_record('order_barcode_trans',['obt_delete_status'=>0,'obt_apparel_id!='=>0,'obt_om_id'=>$post_data['om_id'],'obt_delivered'=>0]);
+                if(empty($cnt_data)){
+                    $this->db_operations->data_update('order_master',['om_delivery_done'=>1],'om_id',$post_data['om_id']);
+                }
+
                 echo json_encode(['status' => TRUE, 'data' => [], 'msg' => 'Delivered successfully.']);
             }
             else{

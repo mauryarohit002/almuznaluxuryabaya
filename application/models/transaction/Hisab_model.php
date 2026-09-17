@@ -4,17 +4,17 @@ require_once APPPATH . 'core/MY_Model.php';
 class hisab_model extends my_model{
     public function __construct(){ parent::__construct('transaction', 'hisab'); }
     public function isExist($id){
-        $data = $this->db->query("SELECT hm_id FROM hisab_master WHERE hm_delete_status = 0 AND hm_is_paid > 0 AND hm_id = $id LIMIT 1")->result_array();
+        $data = $this->db->query("SELECT hm_id FROM hisab_master WHERE hm_delete_status = 0 AND hm_allocated_amt > 0 AND hm_id = $id LIMIT 1")->result_array();
         if(!empty($data)) return true;
         
         return false;
     }
-    public function isTransExist($id){ 
+    public function isTransExist($id){  
         $query="SELECT hm.hm_id 
                 FROM hisab_master hm
                 INNER JOIN hisab_trans ht ON(ht.ht_hm_id = hm.hm_id)
                 WHERE hm.hm_delete_status = 0 
-                AND hm.hm_is_paid > 0
+                AND hm.hm_allocated_amt > 0
                 AND ht.ht_id = $id 
                 LIMIT 1";
         $data = $this->db->query($query)->result_array();
@@ -93,16 +93,26 @@ class hisab_model extends my_model{
     }
     public function get_transaction($hm_id){ 
         $query="SELECT ht.*,
-                jim.jim_entry_no as entry_no,
+                CONCAT(jim.jim_entry_no,'&nbsp;(',UPPER(proces.proces_name),')') as entry_no,
+                om.om_em_entry_no as order_no,
                 DATE_FORMAT(jim.jim_entry_date, '%d-%m-%Y') as entry_date,
+                 DATE_FORMAT(jrm.jrm_entry_date, '%d-%m-%Y') as receive_date,
                 UPPER(apparel.apparel_name) as apparel_name,
+                UPPER(sku.sku_name) as sku_name,
                 obt.obt_item_code as qrcode
                 FROM hisab_trans ht
+                INNER JOIN job_receive_trans jrt ON(jrt.jrt_id = ht.ht_jrt_id)
+                INNER JOIN job_receive_master jrm ON(jrm.jrm_id = jrt.jrt_jrm_id)
                 INNER JOIN job_issue_master jim ON(jim.jim_id = ht.ht_jim_id)
+                INNER JOIN proces_master proces ON(jim.jim_proces_id = proces.proces_id)
                 INNER JOIN order_barcode_trans obt ON(obt.obt_id = ht.ht_obt_id)
+                INNER JOIN order_master om ON(obt.obt_om_id = om.om_id)
                 INNER JOIN apparel_master apparel ON(apparel.apparel_id = ht.ht_apparel_id)
+                INNER JOIN order_trans ot ON(ot.ot_id = obt.obt_ot_id)
+                INNER JOIN sku_master sku ON(ot.ot_sku_id = sku.sku_id)
                 WHERE ht.ht_hm_id = $hm_id
                 AND ht.ht_delete_status = 0
+                GROUP BY ht.ht_id
                 ORDER BY ht.ht_id DESC";
         $record = $this->db->query($query)->result_array();
         if(!empty($record)){
@@ -112,24 +122,31 @@ class hisab_model extends my_model{
         }
         return $record;
     }
-    public function get_job_data($id){ 
-		$query="SELECT 0 as ht_id,
+    public function get_job_data($id,$from_date,$to_date){  
+		$subsql=''; 
+        if(isset($from_date) && !empty($from_date)){
+            $_entry_date_from = date('Y-m-d', strtotime($from_date));
+            $subsql .= " AND jrm.jrm_entry_date >= '".$_entry_date_from."'";
+        }
+        if(isset($to_date) && !empty($to_date)){
+            $_entry_date_to = date('Y-m-d', strtotime($to_date));
+            $subsql .= " AND jrm.jrm_entry_date <= '".$_entry_date_to."'";
+        }    
+
+
+        $query="SELECT 0 as ht_id,
                 jrt.jrt_id as ht_jrt_id,
                 jrt.jrt_jit_id as ht_jit_id,
                 obt.obt_id as ht_obt_id,
                 jim.jim_id as ht_jim_id,
-                jim.jim_entry_no as entry_no,
+                CONCAT(jim.jim_entry_no,'&nbsp;(',UPPER(proces.proces_name),')') as entry_no,
+                om.om_em_entry_no as order_no,
                 DATE_FORMAT(jim.jim_entry_date, '%d-%m-%Y') as entry_date,
+                DATE_FORMAT(jrm.jrm_entry_date, '%d-%m-%Y') as receive_date,
                 apparel.apparel_id as ht_apparel_id,
                 UPPER(apparel.apparel_name) as apparel_name,
+                UPPER(sku.sku_name) as sku_name,
                 obt.obt_item_code as qrcode,
-                -- IFNULL((SELECT kapt.kapt_rate FROM karigar_apparel_trans kapt WHERE kapt.kapt_karigar_id = $id AND kapt.kapt_apparel_id = apparel.apparel_id), 0) as ht_rate
-                sku.sku_fabric,
-                sku.sku_cutting,
-                sku.sku_silai,
-                sku.sku_stone,
-                sku.sku_lagwayi,
-                sku.sku_hand_work,
                 jim.jim_proces_id,
                 CASE jim.jim_proces_id
                     WHEN 1 THEN IFNULL(sku.sku_fabric, 0)
@@ -140,15 +157,22 @@ class hisab_model extends my_model{
                     WHEN 6 THEN IFNULL(sku.sku_hand_work, 0)
                     ELSE 0
                 END as ht_rate
-
 				FROM job_receive_trans jrt
+                INNER JOIN job_receive_master jrm ON(jrm.jrm_id = jrt.jrt_jrm_id)
                 INNER JOIN job_issue_master jim ON(jim.jim_id = jrt.jrt_jim_id)
+                INNER JOIN proces_master proces ON(jim.jim_proces_id = proces.proces_id)
                 INNER JOIN order_barcode_trans obt ON(obt.obt_id = jrt.jrt_obt_id)
+                INNER JOIN order_master om ON(obt.obt_om_id = om.om_id)
+                INNER JOIN order_trans ot ON(ot.ot_id = obt.obt_ot_id)
                 INNER JOIN apparel_master apparel ON(obt.obt_apparel_id = apparel.apparel_id)
+                INNER JOIN sku_master sku ON(ot.ot_sku_id = sku.sku_id)
 				WHERE jim.jim_delete_status = 0
                 AND jrt.jrt_delete_status = 0
                 AND jim.jim_hm_id = 0
+                AND jrt.jrt_not_hisab =0
                 AND jim.jim_karigar_id = $id
+                $subsql
+                GROUP BY jrt.jrt_id
                 ORDER BY jim.jim_entry_no ASC";
 		$data = $this->db->query($query)->result_array();
         // echo "<pre>"; print_r($query);

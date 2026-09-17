@@ -34,5 +34,58 @@ class daily_profit extends my_controller{
 
 		$this->load->view('pages/'.$this->menu.'/'.$this->sub_menu.'/list/_body', $record);
 	}
+
+	public function get_custom_order(){
+        $post_data  = $this->input->post();
+        $id         = $post_data['id'];
+        $result = isLoggedIn();
+		if(!$result['session'] || !$result['status'] || !$result['active']){
+			redirect('login/logout?msg='.$result['msg']);
+			return;
+		}
+		$query="SELECT sku.sku_name,ot.ot_id,ot.ot_sku_cp 
+				FROM order_trans ot
+				INNER JOIN sku_master sku ON (ot.ot_sku_id=sku.sku_id)
+				WHERE ot.ot_om_id=$id";
+		$data = $this->db->query($query)->result_array();		
+        if(empty($data)) return['msg' => 'Data not found.'];	
+        return['status' => TRUE, 'data' => $data, 'msg' => 'Data fetched successfully.'];
+    }
+
+    public function update_price(){
+		$post_data  = $this->input->post();
+		$id         = $post_data['id'];
+		
+		$result = isLoggedIn();
+		if(!$result['session'] || !$result['status'] || !$result['active']){
+			redirect('login/logout?msg='.$result['msg']);
+			return;
+		}
+
+		if(empty($post_data['ot_id'])) return['msg' => 'Item not found.'];
+		
+		
+		$this->db->trans_begin();
+
+		foreach ($post_data['ot_id'] as $key => $value) {
+			$trans_data =[];
+			$trans_data['ot_sku_cp'] = $post_data['ot_sku_cp'][$key];
+			$trans_data['ot_updated_by'] = $_SESSION['user_id'];
+			if($this->db_operations->data_update('order_trans', $trans_data, 'ot_id', $value) < 1){
+				$this->db->trans_rollback();
+				return ['msg' => 'Transaction not updated.'];
+			}
+		}
+		
+		$msg = 'Order updated successfully.';
+		if ($this->db->trans_status() === FALSE){
+			$this->db->trans_rollback();
+			return ['msg' => '1. Transaction Rollback.'];
+		}
+		$this->db->trans_commit();
+
+		$data['id'] 	= $id;
+		return['session' => TRUE, 'status' => TRUE, 'data' => $data,  'msg' => $msg];
+	}
 }
 ?>

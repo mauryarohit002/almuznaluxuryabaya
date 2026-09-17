@@ -25,6 +25,9 @@
 			$record['fabric_stock'] = $this->model->get_fabric_stock();
 			$record['other_stock'] = $this->model->get_other_stock(); 
 			// echo "<pre>"; print_r($record);die;
+			if($_SESSION['user_branch_id']==SAMPLING_BRANCH){
+				$this->load->view('pages/home/blank_dashboard');return;
+			}
 			$this->load->view('pages/home/new_dashboard', $record);return;
 
 		}

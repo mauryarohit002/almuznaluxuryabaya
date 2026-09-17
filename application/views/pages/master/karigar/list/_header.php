@@ -2,6 +2,7 @@
     <th width="3%">#</th>
     <th width="10%">karigar</th>
     <th width="5%">status</th>
+    <th width="5%">KARIGAR TYPE</th>
     <?php if(in_array('read', $action_data)): ?>
         <th width="3%">view</th> 
     <?php endif; ?>

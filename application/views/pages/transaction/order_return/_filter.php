@@ -1,0 +1,1 @@
+<?php $this->load->view('pages/component/_filter', ['header' => 'component', 'body' => $menu.'/'.$sub_menu, 'footer' => 'component']); ?>

@@ -1,4 +1,4 @@
-<script src="<?php echo assets('dist/js/'.$menu.'/'.$sub_menu.'/list.js?v=1')?>">
+<script src="<?php echo assets('dist/js/'.$menu.'/'.$sub_menu.'/list.js?v=2')?>">
 <script>
     $(document).ready(function () {
         lazy_loading('master_loading');
