@@ -88,9 +88,9 @@
                     $arr['status']      = ($value['obt_branch_id'] == $branch_id)? 'MATCH':'MISMATCH';
                     $arr['status_notes'] = ($value['obt_delivered'] == 1)? 'Already Delivered' : 'Delivery Pending';
                     if($value['obt_branch_id'] != $branch_id) $arr['status_notes'] = 'Other Branch! '.$arr['status_notes'];
-                    array_push($record, $arr);
                     $arr['created_by'] = $this->user['id'];
                     $arr['created_at'] = date('Y-m-d H:i:s');
+                    array_push($record, $arr);
                     $msg = ($value['obt_branch_id'] == $branch_id)? 'Barcode scanned successfully' : 'Mismatch! Barcode scanned from other branch';
                 }
             }else{
@@ -130,15 +130,18 @@
                     $msg = 'Mismatch! Unknown Item';
                 }
             }
+            // pre($record,$this->user);exit;
             if(!empty($record)) {
                 if(!$this->db->insert_batch('delivery_trans', $record)) 
                     return ['status' => false, 'message' => 'Failed to insert delivery transaction'];
+
+                $record[0]['created_by_name'] = $this->user['user_name'];
             }
             $this->db->select('total_qty')->from('delivery_master')->where('id', $id);
             $total_qty = $this->db->get()->row_array()['total_qty'];
             // pre($total_qty);exit;
             $this->db->where('id', $id)->update('delivery_master', ['total_qty' => $total_qty+1]);
-        
+
             return ['status' => true, 'data' => $record, 'message' => $msg];
            // return $record;
         }

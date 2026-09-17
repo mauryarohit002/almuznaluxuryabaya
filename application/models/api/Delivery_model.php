@@ -84,8 +84,10 @@ class Delivery_model extends my_api_model{
                 dt.status,
                 dt.status_notes,
                 dt.created_by,
+                um.user_name AS created_by_name,
                 DATE_FORMAT(dt.created_at, '%d-%m-%Y %h:%i %p') AS created_at
                 FROM delivery_trans dt
+                left JOIN user_master um ON(um.user_id = dt.created_by)
                 WHERE dt.delivery_id = $delivery_id";
         $data = $this->db->query($query)->result_array();
         if(!empty($data)){ 

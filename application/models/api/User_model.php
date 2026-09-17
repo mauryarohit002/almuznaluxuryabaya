@@ -23,10 +23,13 @@ class user_model extends my_api_model{
                 WHERE customer.customer_mobile = '$mobile_no'";
         return $this->db->query($query)->result_array();
     }
-    public function get_user($user_name){
+    public function get_user($user_name, $branch_id = NULL){
         $query="SELECT *
                 FROM user_master 
                 WHERE user_name = '$user_name'";
+        if($branch_id) {
+            $query .= " AND user_branch_id = '$branch_id'";
+        }
         return $this->db->query($query)->result_array();
     }
     public function get_session_by_date($date){

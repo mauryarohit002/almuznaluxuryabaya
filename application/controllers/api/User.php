@@ -23,7 +23,7 @@
             if(!isset($this->post_data['branch_id'])) return $this->response(['message' => 'Branch ID not defined.']);
             if(empty($this->post_data['branch_id'])) return $this->response(['message' => 'Branch ID is empty.']);
 
-            $user = $this->model->get_user($this->post_data['user_name']);
+            $user = $this->model->get_user($this->post_data['user_name'], $this->post_data['branch_id']);
             if(empty($user))return $this->response(['message' => 'User not found.']);
             if($user[0]['user_status'] == 0) return $this->response(['message' => 'User account has been deactivated.', 'code' => REST_Controller::HTTP_UNAUTHORIZED]);
             if($user[0]['user_branch_id'] != $this->post_data['branch_id']) return $this->response(['message' => 'User not found in this branch.', 'code' => REST_Controller::HTTP_UNAUTHORIZED]);
